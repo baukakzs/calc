@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Калькулятор оценок — АУЭС</title>
+<title>Калькулятор оценок</title>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -44,7 +44,6 @@
     margin: 0 auto 20px;
     border-radius: 16px;
     border: 1px solid var(--border);
-    
     background: var(--surface);
   }
   .grade-table {
@@ -259,16 +258,16 @@
 
 <div style="max-width:1600px;margin:0 auto;">
   <div class="header">
-    <h1>Калькулятор оценок</h1>
-    <div class="subtitle">АУЭС им. Гумарбека Даукеева · 2025–2026</div>
+    <h1>Калькулятор оценок || by N3XT || SIBk-23-6</h1>
+    <!--<div class="subtitle">АУЭС им. Гумарбека Даукеева · 2025–2026</div>-->
   </div>
 
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
     <div class="type-buttons">
-      <button class="type-btn active" data-type="lek" onclick="toggleType('lek',this)">📖 Лекции</button>
-      <button class="type-btn active" data-type="prak" onclick="toggleType('prak',this)">✏️ Практика</button>
-      <button class="type-btn active" data-type="lab" onclick="toggleType('lab',this)">🔬 Лаборатория</button>
-      <button class="type-btn active" data-type="srop" onclick="toggleType('srop',this)">📚 СРОП</button>
+      <button class="type-btn active" data-type="lek" onclick="toggleType('lek',this)">Лекция</button>
+      <button class="type-btn active" data-type="prak" onclick="toggleType('prak',this)">Практика</button>
+      <button class="type-btn active" data-type="lab" onclick="toggleType('lab',this)">Лаборатория</button>
+      <button class="type-btn active" data-type="srsp" onclick="toggleType('srsp',this)">СРСП</button>
     </div>
     <div class="np-toggle">
       <input type="checkbox" id="npAll" onchange="setAllNp(this.checked)">
@@ -325,6 +324,7 @@
   </div>
 
   <div class="info-row">
+    <h1>hello</h1>
     <div class="info-box"><strong style="color:#93c5fd;">НП</strong> — не предусмотрено &nbsp;|&nbsp; <strong style="color:#e879f9;">НЯ</strong> — не явка (0)</div>
     <div class="info-box"><strong style="color:#93c5fd;">Допуск:</strong> РК1≥25, РК2≥25, (РК1+РК2)/2≥50, РД≥50 → иначе ИО=0 (F)</div>
     <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
@@ -332,31 +332,31 @@
 </div>
 
 <script>
-const types = { lek: true, prak: true, lab: true, srop: true };
-const colors = { lek: '#3b82f6', prak: '#10b981', lab: '#f59e0b', srop: '#8b5cf6' };
-const names  = { lek: 'Лекции', prak: 'Практика', lab: 'Лаборатория', srop: 'СРОП / СРМП' };
+const types = { lek: true, prak: true, lab: true, srsp: true };
+const colors = { lek: '#3b82f6', prak: '#10b981', lab: '#f59e0b', srsp: '#8b5cf6' };
+const names  = { lek: 'Лекция', prak: 'Практика', lab: 'Лаборатория', srsp: 'СРСП' };
 
 // Weight coefficients depending on active types
 function getCoef(type) {
-  const l = types.lek, p = types.prak, b = types.lab, s = types.srop;
-  const active = [l&&'lek', p&&'prak', b&&'lab', s&&'srop'].filter(Boolean);
+  const l = types.lek, p = types.prak, b = types.lab, s = types.srsp;
+  const active = [l&&'lek', p&&'prak', b&&'lab', s&&'srsp'].filter(Boolean);
   if(!active.includes(type)) return 0;
   // Presets
-  if(l&&p&&b&&s) return {lek:0.2,prak:0.3,lab:0.3,srop:0.2}[type];
+  if(l&&p&&b&&s) return {lek:0.2,prak:0.3,lab:0.3,srsp:0.2}[type];
   if(l&&p&&b&&!s) return {lek:0.25,prak:0.4,lab:0.35}[type]||0;
-  if(l&&p&&!b&&s) return {lek:0.25,prak:0.5,lab:0,srop:0.25}[type]||0;
-  if(l&&!p&&b&&s) return {lek:0.25,prak:0,lab:0.5,srop:0.25}[type]||0;
-  if(!l&&p&&b&&s) return {lek:0,prak:0.4,lab:0.4,srop:0.2}[type]||0;
+  if(l&&p&&!b&&s) return {lek:0.25,prak:0.5,lab:0,srsp:0.25}[type]||0;
+  if(l&&!p&&b&&s) return {lek:0.25,prak:0,lab:0.5,srsp:0.25}[type]||0;
+  if(!l&&p&&b&&s) return {lek:0,prak:0.4,lab:0.4,srsp:0.2}[type]||0;
   if(l&&p&&!b&&!s) return {lek:0.35,prak:0.65}[type]||0;
   if(l&&!p&&b&&!s) return {lek:0.4,lab:0.6}[type]||0;
   if(!l&&p&&b&&!s) return {prak:0.5,lab:0.5}[type]||0;
-  if(l&&!p&&!b&&s) return {lek:0.5,srop:0.5}[type]||0;
-  if(!l&&p&&!b&&s) return {prak:0.8,srop:0.2}[type]||0;
-  if(!l&&!p&&b&&s) return {lab:0.8,srop:0.2}[type]||0;
+  if(l&&!p&&!b&&s) return {lek:0.5,srsp:0.5}[type]||0;
+  if(!l&&p&&!b&&s) return {prak:0.8,srsp:0.2}[type]||0;
+  if(!l&&!p&&b&&s) return {lab:0.8,srsp:0.2}[type]||0;
   if(l&&!p&&!b&&!s) return type==='lek'?1:0;
   if(!l&&p&&!b&&!s) return type==='prak'?1:0;
   if(!l&&!p&&b&&!s) return type==='lab'?1:0;
-  if(!l&&!p&&!b&&s) return type==='srop'?1:0;
+  if(!l&&!p&&!b&&s) return type==='srsp'?1:0;
   return 0;
 }
 
@@ -406,7 +406,7 @@ function makeInput(id, isRk=false) {
 function buildTable() {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
-  const disciplines = ['lek','prak','lab','srop'];
+  const disciplines = ['lek','prak','lab','srsp'];
 
   disciplines.forEach((type, idx) => {
     const tr = document.createElement('tr');
@@ -516,7 +516,7 @@ function buildTable() {
 }
 
 function setAllNp(isNp){
-  for(const type of ['lek','prak','lab','srop']){
+  for(const type of ['lek','prak','lab','srsp']){
     for(let w=1;w<=15;w++){
       const el=document.getElementById(`${type}-w${w}`);
       if(el){ el.value=isNp?'НП':''; updateStyle(el); if(!isNp) handleBlur(el); }
@@ -545,7 +545,7 @@ function getLetter(s){
 function calculate(){
   // --- Step 1: per-discipline TK1, TK2 ---
   const tk = {};
-  for(const type of ['lek','prak','lab','srop']){
+  for(const type of ['lek','prak','lab','srsp']){
     const w1to7  = [], w8to15 = [];
     for(let w=1;w<=7;w++)  w1to7.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
     for(let w=8;w<=15;w++) w8to15.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
@@ -560,7 +560,7 @@ function calculate(){
   function calcTKObsh(semester){
     const key = semester===1?'tk1':'tk2';
     let sumW=0, sumV=0;
-    for(const type of ['lek','prak','lab','srop']){
+    for(const type of ['lek','prak','lab','srsp']){
       const c=getCoef(type);
       if(!c||!types[type]) continue;
       const v=tk[type][key];

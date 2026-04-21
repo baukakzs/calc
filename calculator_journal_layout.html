@@ -642,6 +642,226 @@
     font-size: 1.8rem;
   }
 }
+.history-section {
+  background: linear-gradient(135deg, #0f1f3d, #111827);
+  border: 1px solid #1e3a5f;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 20px auto 0;
+  display: none;
+}
+ 
+.history-section.show {
+  display: block;
+}
+ 
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+ 
+.history-header h2 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.1rem;
+  color: #06b6d4;
+  margin: 0;
+}
+ 
+.history-controls {
+  display: flex;
+  gap: 8px;
+}
+ 
+.history-btn {
+  padding: 6px 12px;
+  background: rgba(59,130,246,0.15);
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  color: #93c5fd;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: 'Onest', sans-serif;
+  transition: all 0.2s;
+}
+ 
+.history-btn:hover {
+  background: rgba(59,130,246,0.25);
+  box-shadow: 0 0 8px rgba(59,130,246,0.3);
+}
+ 
+.history-btn.danger {
+  background: rgba(239,68,68,0.15);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+ 
+.history-btn.danger:hover {
+  background: rgba(239,68,68,0.25);
+}
+ 
+.history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+ 
+.history-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+ 
+.history-item:hover {
+  border-color: #3b82f6;
+  background: #1a2844;
+  box-shadow: 0 0 12px rgba(59,130,246,0.2);
+}
+ 
+.history-item.active {
+  border-color: #06b6d4;
+  background: #0d2a36;
+  box-shadow: 0 0 12px rgba(6,182,212,0.3);
+}
+ 
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+ 
+.history-item-time {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+ 
+.history-item-delete {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+ 
+.history-item-delete:hover {
+  background: rgba(239,68,68,0.15);
+}
+ 
+.history-item-grade {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #60a5fa;
+  margin: 8px 0;
+}
+ 
+.history-item-details {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+ 
+.history-item-details span {
+  display: flex;
+  justify-content: space-between;
+}
+ 
+.history-item-details .label {
+  color: #64748b;
+}
+ 
+.history-item-details .value {
+  color: #60a5fa;
+  font-weight: 600;
+}
+ 
+.history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+ 
+.history-comparison {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(59,130,246,0.05);
+  border-left: 3px solid #3b82f6;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+ 
+.comparison-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+ 
+.comparison-label {
+  color: #64748b;
+}
+ 
+.comparison-value {
+  color: #60a5fa;
+  font-weight: 600;
+}
+ 
+@media (max-width: 768px) {
+  .history-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    max-height: 500px;
+  }
+  
+  .history-item-grade {
+    font-size: 1.4rem;
+  }
+  
+  .history-section {
+    padding: 16px;
+  }
+}
+ 
+@media (max-width: 480px) {
+  .history-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .history-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .history-header h2 {
+    font-size: 1rem;
+  }
+  
+  .history-controls {
+    width: 100%;
+  }
+  
+  .history-btn {
+    flex: 1;
+  }
+}
 </style>
 </head>
 <body>
@@ -723,6 +943,24 @@
     <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
     <div class="info-box"><strong style="color:#10b981;">🏆 Автомат:</strong> нет ни одной НЯ → РД ставится в поле экзамена автоматически</div>
   </div>
+
+<div class="history-section show" id="historySection">
+    <div class="history-header">
+    <h2>📊 История расчётов</h2>
+    <div class="history-controls">
+      <button class="history-btn" onclick="toggleHistory()">Показать</button>
+      <button class="history-btn danger" onclick="clearHistory()">Очистить</button>
+    </div>
+  </div>
+  <div class="history-list" id="historyList"></div>
+  <div class="history-empty" id="historyEmpty" style="display: none;">
+    Нет сохранённых расчётов. Сделайте первый расчёт чтобы начать историю 📝
+  </div>
+  <div class="history-comparison" id="historyComparison" style="display: none;">
+    <div style="font-weight: 600; margin-bottom: 8px; color: #93c5fd;">Сравнение с предыдущим:</div>
+    <div id="comparisonContent"></div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -832,7 +1070,171 @@ function makeInput(id, isRk=false) {
   inp.onblur   = () => handleBlur(inp);
   return inp;
 }
-
+// ===== ИСТОРИЯ РАСЧЁТОВ =====
+let calcHistory = [];
+let historyVisible = false;
+let selectedHistoryIndex = null;
+ 
+function saveToHistory(data) {
+  const timestamp = new Date();
+  const historyEntry = {
+    id: Date.now(),
+    time: timestamp.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+    date: timestamp.toLocaleDateString('ru-RU'),
+    rk1: data.rk1,
+    rk2: data.rk2,
+    rd: data.rd,
+    exam: data.exam,
+    io: data.io,
+    grade: data.grade,
+    isAvtomat: data.isAvtomat,
+    dopusk: data.dopusk,
+  };
+  
+  calcHistory.unshift(historyEntry); // добавляем в начало
+  if (calcHistory.length > 20) calcHistory.pop(); // максимум 20 записей
+  
+  updateHistoryUI();
+  saveToLocalStorage();
+}
+ 
+function updateHistoryUI() {
+  const historyList = document.getElementById('historyList');
+  const historyEmpty = document.getElementById('historyEmpty');
+  
+  if (calcHistory.length === 0) {
+    historyList.innerHTML = '';
+    historyEmpty.style.display = 'block';
+    return;
+  }
+  
+  historyEmpty.style.display = 'none';
+  historyList.innerHTML = calcHistory.map((entry, idx) => `
+    <div class="history-item ${selectedHistoryIndex === idx ? 'active' : ''}" onclick="selectHistoryItem(${idx})">
+      <div class="history-item-header">
+        <div>
+          <div class="history-item-time">${entry.date}</div>
+          <div class="history-item-time">${entry.time}</div>
+        </div>
+        <button class="history-item-delete" onclick="deleteHistoryItem(event, ${idx})">✕</button>
+      </div>
+      <div class="history-item-grade" style="color: ${entry.isAvtomat ? '#34d399' : '#60a5fa'}">${entry.grade}</div>
+      <div class="history-item-details">
+        <span><span class="label">РК1:</span><span class="value">${entry.rk1 !== null ? entry.rk1.toFixed(2) : '—'}</span></span>
+        <span><span class="label">РК2:</span><span class="value">${entry.rk2 !== null ? entry.rk2.toFixed(2) : '—'}</span></span>
+        <span><span class="label">РД:</span><span class="value">${entry.rd !== null ? entry.rd.toFixed(2) : '—'}</span></span>
+        <span><span class="label">Экзамен:</span><span class="value">${entry.exam !== null ? entry.exam.toFixed(2) : '—'}${entry.isAvtomat ? ' 🏆' : ''}</span></span>
+        <span><span class="label">ИО:</span><span class="value">${entry.io !== null ? entry.io.toFixed(2) : '—'}</span></span>
+      </div>
+    </div>
+  `).join('');
+}
+ 
+function selectHistoryItem(idx) {
+  selectedHistoryIndex = idx;
+  updateHistoryUI();
+  showComparison(idx);
+}
+ 
+function deleteHistoryItem(event, idx) {
+  event.stopPropagation();
+  calcHistory.splice(idx, 1);
+  selectedHistoryIndex = null;
+  updateHistoryUI();
+  document.getElementById('historyComparison').style.display = 'none';
+  saveToLocalStorage();
+}
+ 
+function toggleHistory() {
+  const section = document.getElementById('historySection');
+  const buttons = document.querySelectorAll('.history-btn');
+  const btn = buttons[0]; // берём первую кнопку (Показать/Скрыть)
+  
+  historyVisible = !historyVisible;
+  
+  if (historyVisible) {
+    section.classList.add('show');
+    btn.textContent = 'Скрыть';
+  } else {
+    section.classList.remove('show');
+    btn.textContent = 'Показать';
+  }
+}
+ 
+function clearHistory() {
+  if (confirm('Удалить всю историю расчётов? Это действие не можно отменить.')) {
+    calcHistory = [];
+    selectedHistoryIndex = null;
+    historyVisible = false;
+    updateHistoryUI();
+    document.getElementById('historySection').classList.remove('show');
+    document.getElementById('historyComparison').style.display = 'none';
+    saveToLocalStorage();
+  }
+}
+ 
+function showComparison(idx) {
+  if (idx === 0 || calcHistory.length < 2) {
+    document.getElementById('historyComparison').style.display = 'none';
+    return;
+  }
+  
+  const current = calcHistory[idx];
+  const previous = calcHistory[idx - 1];
+  const comparison = document.getElementById('historyComparison');
+  const content = document.getElementById('comparisonContent');
+  
+  const formatDiff = (curr, prev) => {
+    if (curr === null || prev === null) return '—';
+    const diff = curr - prev;
+    const sign = diff > 0 ? '+' : '';
+    return `${sign}${diff.toFixed(2)}`;
+  };
+  
+  content.innerHTML = `
+    <div class="comparison-row">
+      <span class="comparison-label">РК1:</span>
+      <span class="comparison-value">${formatDiff(current.rk1, previous.rk1)}</span>
+    </div>
+    <div class="comparison-row">
+      <span class="comparison-label">РК2:</span>
+      <span class="comparison-value">${formatDiff(current.rk2, previous.rk2)}</span>
+    </div>
+    <div class="comparison-row">
+      <span class="comparison-label">РД:</span>
+      <span class="comparison-value">${formatDiff(current.rd, previous.rd)}</span>
+    </div>
+    <div class="comparison-row">
+      <span class="comparison-label">ИО:</span>
+      <span class="comparison-value">${formatDiff(current.io, previous.io)}</span>
+    </div>
+  `;
+  
+  comparison.style.display = 'block';
+}
+ 
+function saveToLocalStorage() {
+  localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
+}
+ 
+function loadFromLocalStorage() {
+  const saved = localStorage.getItem('calcHistory');
+  if (saved) {
+    try {
+      calcHistory = JSON.parse(saved);
+      updateHistoryUI();
+    } catch (e) {
+      console.error('Ошибка при загрузке истории:', e);
+    }
+  }
+}
+ 
+// Загрузить историю при загрузке страницы
+loadFromLocalStorage();
+// Показываем историю по дефолту
+document.getElementById('historySection').classList.add('show');
+document.querySelector('.history-btn').textContent = 'Скрыть';
+historyVisible = true;
 function buildTable() {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
@@ -1225,6 +1627,17 @@ fgBlock.innerHTML=`
   <div style="color:#64748b;font-size:0.75rem;margin-top:4px;">${dopusk===false?'НЕДОПУСК':isAvtomat?'🏆 Автомат — итоговая оценка':'Итоговая оценка'}</div>
 `;  } else fgBlock.style.display='none';
 
+// Сохраняем в историю
+saveToHistory({
+  rk1: rk1,
+  rk2: rk2,
+  rd: rd,
+  exam: examForCalc,
+  io: io,
+  grade: finalGrade,
+  isAvtomat: isAvtomat,
+  dopusk: dopusk,
+});
   document.getElementById('resultCard').style.display='block';
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
 }

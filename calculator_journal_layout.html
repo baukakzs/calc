@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор оценок — АУЭС</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d47;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --np: #334155;
+    --np-text: #94a3b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Onest', sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.06) 0%, transparent 50%);
+  }
+  h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .header { margin-bottom: 20px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: border-color 0.2s;
+    max-width: 1600px;
+    margin: 0 auto 16px;
+  }
+  .card:hover { border-color: #2d4a7a; }
+  .card-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+    flex-shrink: 0;
+  }
+  .toggle-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .type-btn {
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Onest', sans-serif;
+  }
+  .type-btn.active {
+    background: rgba(59,130,246,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .journal-wrap {
+    max-width: 1600px;
+    margin: 0 auto;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+  }
+  table.journal {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 0.76rem;
+    color: var(--text);
+  }
+  .journal th, .journal td {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    padding: 8px 6px;
+    min-width: 38px;
+    height: 58px;
+    background: rgba(17,24,39,0.96);
+  }
+  .journal th {
+    color: var(--muted);
+    font-weight: 500;
+    background: rgba(26,34,54,0.95);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .journal th.sticky-col, .journal td.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    min-width: 150px;
+    max-width: 150px;
+    background: linear-gradient(135deg, #111827, #0f172a);
+    text-align: left;
+    padding-left: 12px;
+  }
+  .journal th.sticky-col { z-index: 3; }
+  .journal td.summary-cell {
+    background: rgba(15,31,61,0.88);
+    font-weight: 600;
+  }
+
+  .cell-input, .small-input {
+    width: 30%;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Onest', sans-serif;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 7px 4px;
+    transition: all 0.2s;
+  }
+  .cell-input:focus, .small-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #162032;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+  }
+  .cell-input.np, .small-input.np { background: var(--np); color: var(--np-text); }
+  .cell-input.nya, .small-input.nya { background: #1a1a2e; color: #e879f9; }
+  .cell-input.valid { border-color: rgba(16,185,129,0.4); }
+
+  .row-disabled td:not(.sticky-col) { opacity: 0.32; }
+  .row-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .row-label small {
+    color: var(--muted);
+    font-size: 0.65rem;
+  }
+
+  .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap: 16px;
+    max-width: 1600px;
+    margin: 16px auto 0;
+  }
+  .rk-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .rk-block label {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .rk-block input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Onest', sans-serif;
+    font-size: 0.9rem;
+    padding: 9px 12px;
+    transition: all 0.2s;
+  }
+  .rk-block input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+  }
+  .rk-block input.np { background: var(--np); color: var(--np-text); }
+
+  .btn-calc {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto 0;
+    display: block;
+    padding: 14px;
+    background: linear-gradient(135deg, #2563eb, #0891b2);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn-calc:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.35); }
+
+  .result-card {
+    background: linear-gradient(135deg, #0f1f3d, #111827);
+    border: 1px solid #1e3a5f;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 1600px;
+    margin: 20px auto 0;
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .result-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .result-item .val {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .result-item .lbl {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Unbounded', sans-serif;
+    margin-top: 14px;
+  }
+  .status-badge.allowed { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .status-badge.denied  { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+  .status-badge.unknown { background: rgba(100,116,139,0.15); color: var(--muted); border: 1px solid var(--border); }
+  .color-accent { color: var(--accent); }
+  .color-green { color: var(--green); }
+  .color-red { color: var(--red); }
+
+  .detail-block {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    line-height: 1.9;
+    color: var(--muted);
+  }
+  .detail-block span { color: var(--text); font-weight: 500; }
+  .final-grade-big {
+    text-align: center;
+    margin-top: 16px;
+  }
+  .final-grade-big .grade-letter {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .final-grade-big .grade-trad {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .info-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px auto 20px;
+    max-width: 1600px;
+  }
+  .info-box {
+    flex: 1;
+    min-width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .info-box strong { color: var(--text); }
+
+  @media (max-width: 900px) {
+    body { padding: 12px; }
+    .controls-grid { grid-template-columns: 1fr; }
+    .journal th, .journal td { min-width: 48px; }
+    .journal th.sticky-col, .journal td.sticky-col { min-width: 120px; max-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<div style="max-width:1600px;margin:0 auto 10px;">
+  <div class="header">
+    <h1>Калькулятор оценок</h1>
+    <div class="subtitle">АУЭС им. Гумарбека Даукеева · 2025–2026</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Типы занятий</div>
+  <p style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;">Выберите виды занятий, которые предусмотрены по вашей дисциплине:</p>
+  <div class="toggle-row">
+    <button class="type-btn active" data-type="lek" onclick="toggleType('lek',this)">Лекции</button>
+    <button class="type-btn active" data-type="prak" onclick="toggleType('prak',this)">Практика</button>
+    <button class="type-btn active" data-type="lab" onclick="toggleType('lab',this)">Лаборатория</button>
+    <button class="type-btn active" data-type="srop" onclick="toggleType('srop',this)">СРОП/СРМП/СРДП</button>
+  </div>
+</div>
+
+<div class="journal-wrap">
+  <table class="journal">
+    <thead>
+      <tr>
+        <th class="sticky-col">Вид занятий</th>
+        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th>
+        <th>ТК1</th>
+        <th>ТКобщ1</th>
+        <th>РК1</th>
+        <th>Р1</th>
+        <th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th>
+        <th>ТК2</th>
+        <th>ТКобщ2</th>
+        <th>РК2</th>
+        <th>Р2</th>
+      </tr>
+    </thead>
+    <tbody id="journalBody"></tbody>
+  </table>
+</div>
+
+<div class="controls-grid">
+  <div class="card">
+    <div class="card-title">Рубежный контроль</div>
+    <div class="rk-row">
+      <div class="rk-block">
+        <label>РК1 (7 неделя)</label>
+        <input type="text" id="rk1" value="НП" class="np" oninput="handleInput(this)">
+      </div>
+      <div class="rk-block">
+        <label>РК2 (15 неделя)</label>
+        <input type="text" id="rk2" value="НП" class="np" oninput="handleInput(this)">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Дополнительные оценки</div>
+    <div style="display:grid;gap:10px;">
+      <div class="rk-block">
+        <label>Оценка за курсовую работу</label>
+        <input type="text" id="kursovaya" value="НП" class="np" oninput="handleInput(this)">
+      </div>
+      <div class="rk-block">
+        <label>Практика (итоговая оценка)</label>
+        <input type="text" id="praktika" value="НП" class="np" oninput="handleInput(this)">
+      </div>
+      <div class="rk-block">
+        <label>Исследовательская работа</label>
+        <input type="text" id="issledovanie" value="НП" class="np" oninput="handleInput(this)">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Итоговый контроль (экзамен)</div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-bottom:14px;">ИО = 0.6 × РД + 0.4 × ИК</p>
+    <div class="rk-block">
+      <label>Оценка за экзамен (ИК, 0–100)</label>
+      <input type="text" id="exam" value="НП" class="np" oninput="handleInput(this)">
+    </div>
+    <p style="font-size:0.68rem;color:var(--muted);margin-top:10px;">Оставьте НП чтобы посчитать только рейтинг допуска</p>
+  </div>
+</div>
+
+<div style="max-width:1600px;margin:0 auto;padding:0 4px;">
+  <button class="btn-calc" onclick="calculate()">Рассчитать</button>
+</div>
+
+<div class="result-card" id="resultCard" style="display:none;">
+  <div class="card-title" style="margin-bottom:16px;">Результаты</div>
+  <div class="result-grid" id="resultGrid"></div>
+  <div id="statusBadge"></div>
+  <div class="detail-block" id="detailBlock"></div>
+  <div class="final-grade-big" id="finalGradeBlock" style="display:none;"></div>
+</div>
+
+<div class="info-row">
+  <div class="info-box">
+    <strong>НП</strong> — не предусмотрено (поле не учитывается)<br>
+    <strong>НЯ</strong> — не явка (засчитывается как 0)<br>
+    Пустое поле засчитывается как <strong>0</strong>
+  </div>
+  <div class="info-box">
+    <strong>Допуск к экзамену:</strong><br>
+    РК1 ≥ 25 и РК2 ≥ 25<br>
+    (РК1+РК2)/2 ≥ 50<br>
+    РД ≥ 50
+  </div>
+  <div class="info-box">
+    <strong>Формула итоговой оценки:</strong><br>
+    Р1/Р2 = 0.7 × ТКобщ + 0.3 × РК<br>
+    РД = (Р1+Р2)/2<br>
+    ИО = 0.6 × РД + 0.4 × ИК
+  </div>
+</div>
+
+<script>
+const types = { lek: true, prak: true, lab: true, srop: true };
+const labels = {
+  lek: 'Лекции',
+  prak: 'Практика',
+  lab: 'Лаборатория',
+  srop: 'СРОП / СРМП / СРДП'
+};
+
+function getCoef(type) {
+  const l = types.lek, p = types.prak, b = types.lab;
+  if(l && p && b) return {lek:0.2, prak:0.3, lab:0.3, srop:0.2}[type];
+  if(l && p && !b) return {lek:0.3, prak:0.5, lab:0, srop:0.2}[type];
+  if(l && !p && b) return {lek:0.3, prak:0, lab:0.5, srop:0.2}[type];
+  if(!l && p && !b) return {lek:0, prak:0.9, lab:0, srop:0.1}[type];
+  if(l && !p && !b) return {lek:0.5, prak:0, lab:0, srop:0.5}[type];
+  if(!l && p && b) return {lek:0, prak:0.45, lab:0.45, srop:0.1}[type];
+  return 0;
+}
+
+function buildJournal() {
+  const tbody = document.getElementById('journalBody');
+  tbody.innerHTML = '';
+  ['lek','prak','lab','srop'].forEach(type => {
+    const tr = document.createElement('tr');
+    tr.id = `row-${type}`;
+    let html = `<td class="sticky-col"><div class="row-label"><span>${labels[type]}</span><small>${type==='srop' ? '2 оценки за семестр' : 'оценки по неделям'}</small></div></td>`;
+
+    if (type === 'srop') {
+      for (let w=1; w<=7; w++) html += `<td>${w===7 ? `<input type="text" id="srop-tk1" value="НП" class="small-input np" oninput="handleInput(this)">` : ''}</td>`;
+      html += `<td class="summary-cell" id="out-srop-tk1">—</td>`;
+      html += `<td class="summary-cell" id="out-tkobsh1">—</td>`;
+      html += `<td class="summary-cell"><input type="text" id="rk1-inline" value="НП" class="small-input np" oninput="syncRk('rk1', this.value);handleInput(this)"></td>`;
+      html += `<td class="summary-cell" id="out-r1">—</td>`;
+      for (let w=8; w<=15; w++) html += `<td>${w===15 ? `<input type="text" id="srop-tk2" value="НП" class="small-input np" oninput="handleInput(this)">` : ''}</td>`;
+      html += `<td class="summary-cell" id="out-srop-tk2">—</td>`;
+      html += `<td class="summary-cell" id="out-tkobsh2">—</td>`;
+      html += `<td class="summary-cell"><input type="text" id="rk2-inline" value="НП" class="small-input np" oninput="syncRk('rk2', this.value);handleInput(this)"></td>`;
+      html += `<td class="summary-cell" id="out-r2">—</td>`;
+    } else {
+      for (let w=1; w<=7; w++) {
+        html += `<td><input type="text" id="${type}-w${w}" value="НП" class="cell-input np default-np" data-default-np="true" onfocus="clearDefaultNp(this)" onblur="restoreDefaultNp(this)" oninput="handleWeekInput(this)"></td>`;
+      }
+      html += `<td class="summary-cell" id="out-${type}-tk1">—</td>`;
+      html += `<td class="summary-cell">${type==='prak' ? '<span id="out-tkobsh1-row">—</span>' : ''}</td>`;
+      html += `<td class="summary-cell">${type==='prak' ? '<span id="out-rk1-row">—</span>' : ''}</td>`;
+      html += `<td class="summary-cell">${type==='prak' ? '<span id="out-r1-row">—</span>' : ''}</td>`;
+      for (let w=8; w<=15; w++) {
+        html += `<td><input type="text" id="${type}-w${w}" value="НП" class="cell-input np default-np" data-default-np="true" onfocus="clearDefaultNp(this)" onblur="restoreDefaultNp(this)" oninput="handleWeekInput(this)"></td>`;
+      }
+      html += `<td class="summary-cell" id="out-${type}-tk2">—</td>`;
+      html += `<td class="summary-cell">${type==='prak' ? '<span id="out-tkobsh2-row">—</span>' : ''}</td>`;
+      html += `<td class="summary-cell">${type==='prak' ? '<span id="out-rk2-row">—</span>' : ''}</td>`;
+      html += `<td class="summary-cell">${type==='prak' ? '<span id="out-r2-row">—</span>' : ''}</td>`;
+    }
+
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+  syncInlineRk();
+  updateRowVisibility();
+}
+
+function syncRk(targetId, value) {
+  const main = document.getElementById(targetId);
+  const inline = document.getElementById(targetId + '-inline');
+  if (main && main.value !== value) { main.value = value; handleInput(main); }
+  if (inline && inline.value !== value) { inline.value = value; handleInput(inline); }
+}
+
+function syncInlineRk() {
+  syncRk('rk1', document.getElementById('rk1').value);
+  syncRk('rk2', document.getElementById('rk2').value);
+}
+
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'rk1') syncRk('rk1', e.target.value);
+  if (e.target.id === 'rk2') syncRk('rk2', e.target.value);
+});
+
+function clearDefaultNp(el) {
+  if(el.dataset.defaultNp === 'true' && el.value.trim().toUpperCase() === 'НП') {
+    el.value = '';
+    el.dataset.defaultNp = 'false';
+    el.classList.remove('np');
+  }
+}
+function restoreDefaultNp(el) {
+  if(el.value.trim() === '' && !el.dataset.userCleared) {
+    el.value = 'НП';
+    el.dataset.defaultNp = 'true';
+    el.classList.add('np');
+    el.classList.remove('nya','valid');
+  }
+}
+function handleWeekInput(el) {
+  const v = el.value.trim().toUpperCase();
+  el.classList.remove('np','nya','valid');
+  if(v === '') { el.dataset.defaultNp = 'false'; el.dataset.userCleared = 'true'; return; }
+  el.dataset.userCleared = 'false';
+  if(v === 'НП') el.classList.add('np');
+  else if(v === 'НЯ') el.classList.add('nya');
+  else el.classList.add('valid');
+}
+// function handleInput(el) {
+//   const v = el.value.trim().toUpperCase();
+//   el.classList.remove('np','nya');
+//   if(v === '') return;
+//   if(v === 'НП') el.classList.add('np');
+//   else if(v === 'НЯ') el.classList.add('nya');
+// }
+function handleInput(el) {
+  let v = el.value;
+
+  // если в поле есть НП и пользователь начал ввод — убираем НП
+  if (v.toUpperCase().startsWith('НП') && v.length > 2) {
+    v = v.replace(/^НП/i, '');
+    el.value = v;
+  }
+
+  const val = v.trim().toUpperCase();
+
+  el.classList.remove('np','nya');
+
+  if (val === '') return;
+
+  if (val === 'НП') {
+    el.classList.add('np');
+  } else if (val === 'НЯ') {
+    el.classList.add('nya');
+  }
+}
+
+function parseVal(v) {
+  if(v === null || v === undefined) return 0;
+  const u = v.trim().toUpperCase();
+  if(u === 'НП') return null;
+  if(u === '') return 0;
+  if(u === 'НЯ') return 0;
+  const n = parseFloat(u.replace(',','.'));
+  return isNaN(n) ? 0 : Math.min(100, Math.max(0, n));
+}
+function avg(arr) {
+  if(!arr.length) return null;
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
+}
+function fmt(v) {
+  if(v === null || v === undefined) return '—';
+  let s = v.toFixed(2).replace('.', ',');
+  s = s.replace(/,00$/, '');
+  s = s.replace(/(\,\d)0$/, '$1');
+  return s;
+}
+function getLetterGrade(score) {
+  if(score >= 95) return {letter:'A', gpa:4.0, trad:'Отлично'};
+  if(score >= 90) return {letter:'A−', gpa:3.67, trad:'Отлично'};
+  if(score >= 85) return {letter:'B+', gpa:3.33, trad:'Хорошо'};
+  if(score >= 80) return {letter:'B', gpa:3.0, trad:'Хорошо'};
+  if(score >= 75) return {letter:'B−', gpa:2.67, trad:'Хорошо'};
+  if(score >= 70) return {letter:'C+', gpa:2.33, trad:'Удовлетворительно'};
+  if(score >= 65) return {letter:'C', gpa:2.0, trad:'Удовлетворительно'};
+  if(score >= 60) return {letter:'C−', gpa:1.67, trad:'Удовлетворительно'};
+  if(score >= 55) return {letter:'D+', gpa:1.33, trad:'Удовлетворительно'};
+  if(score >= 50) return {letter:'D−', gpa:1.0, trad:'Удовлетворительно'};
+  if(score >= 25) return {letter:'FX', gpa:0.5, trad:'Неудовлетворительно'};
+  return {letter:'F', gpa:0, trad:'Неудовлетворительно'};
+}
+
+function getWeekVals(type, start, end) {
+  const vals = [];
+  for(let w=start; w<=end; w++) {
+    const el = document.getElementById(`${type}-w${w}`);
+    if(el) {
+      const v = parseVal(el.value);
+      if(v !== null) vals.push(v);
+    }
+  }
+  return vals;
+}
+
+function toggleType(type, btn) {
+  types[type] = !types[type];
+  btn.classList.toggle('active', types[type]);
+  updateRowVisibility();
+}
+function updateRowVisibility() {
+  ['lek','prak','lab','srop'].forEach(type => {
+    const row = document.getElementById(`row-${type}`);
+    if (!row) return;
+    row.classList.toggle('row-disabled', !types[type]);
+  });
+}
+
+function calculate() {
+  syncInlineRk();
+
+  const tk = {};
+  ['lek','prak','lab'].forEach(type => {
+    if(!types[type]) { tk[type]={tk1:null,tk2:null}; return; }
+    tk[type] = {
+      tk1: avg(getWeekVals(type,1,7)),
+      tk2: avg(getWeekVals(type,8,15))
+    };
+  });
+
+  let sropTk1 = null, sropTk2 = null;
+  if(types.srop) {
+    sropTk1 = parseVal(document.getElementById('srop-tk1').value);
+    sropTk2 = parseVal(document.getElementById('srop-tk2').value);
+  }
+
+  let rk1 = parseVal(document.getElementById('rk1').value);
+  let rk2 = parseVal(document.getElementById('rk2').value);
+
+  function calcTKObsh(tkNum) {
+    const vals = [];
+    const tkKey = tkNum===1?'tk1':'tk2';
+    ['lek','prak','lab','srop'].forEach(type => {
+      const coef = getCoef(type);
+      if(!coef || !types[type]) return;
+      const val = type==='srop' ? (tkNum===1 ? sropTk1 : sropTk2) : tk[type][tkKey];
+      if(val !== null) vals.push({v:val, k:coef});
+    });
+    if(!vals.length) return null;
+    const sumK = vals.reduce((a,b)=>a+b.k,0);
+    return vals.reduce((a,b)=>a+b.v*(b.k/sumK),0);
+  }
+
+  const tkObsh1 = calcTKObsh(1);
+  const tkObsh2 = calcTKObsh(2);
+
+  let p1 = null, p2 = null;
+  if (tkObsh1 !== null && rk1 !== null) p1 = 0.7 * tkObsh1 + 0.3 * rk1;
+  if (tkObsh2 !== null && rk2 !== null) p2 = 0.7 * tkObsh2 + 0.3 * rk2;
+
+  let rd = null;
+  if (p1 !== null && p2 !== null) rd = (p1 + p2) / 2;
+
+  const examRaw = parseVal(document.getElementById('exam').value);
+  let io = null;
+  if(rd !== null && examRaw !== null) io = 0.6*rd + 0.4*examRaw;
+
+  let dopusk = null;
+  let dopuskReasons = [];
+  if(rk1 !== null && rk2 !== null && rd !== null) {
+    dopusk = true;
+    if(rk1 < 25) { dopusk=false; dopuskReasons.push(`РК1 = ${fmt(rk1)} < 25`); }
+    if(rk2 < 25) { dopusk=false; dopuskReasons.push(`РК2 = ${fmt(rk2)} < 25`); }
+    if((rk1+rk2)/2 < 50) { dopusk=false; dopuskReasons.push(`(РК1+РК2)/2 = ${fmt((rk1+rk2)/2)} < 50`); }
+    if(rd < 50) { dopusk=false; dopuskReasons.push(`РД = ${fmt(rd)} < 50`); }
+  }
+
+  // Inline outputs in journal
+  ['lek','prak','lab'].forEach(type => {
+    document.getElementById(`out-${type}-tk1`).textContent = fmt(tk[type].tk1);
+    document.getElementById(`out-${type}-tk2`).textContent = fmt(tk[type].tk2);
+  });
+  document.getElementById('out-srop-tk1').textContent = fmt(sropTk1);
+  document.getElementById('out-srop-tk2').textContent = fmt(sropTk2);
+
+  document.getElementById('out-tkobsh1').textContent = fmt(tkObsh1);
+  document.getElementById('out-tkobsh2').textContent = fmt(tkObsh2);
+  document.getElementById('out-r1').textContent = fmt(p1);
+  document.getElementById('out-r2').textContent = fmt(p2);
+
+  const ids = {
+    'out-tkobsh1-row': fmt(tkObsh1),
+    'out-tkobsh2-row': fmt(tkObsh2),
+    'out-rk1-row': fmt(rk1),
+    'out-rk2-row': fmt(rk2),
+    'out-r1-row': fmt(p1),
+    'out-r2-row': fmt(p2),
+  };
+  Object.entries(ids).forEach(([id,val]) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = val;
+  });
+
+  const grid = document.getElementById('resultGrid');
+  grid.innerHTML = '';
+  function addResult(label, val, color='') {
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.innerHTML = `<span class="val ${color}">${val}</span><span class="lbl">${label}</span>`;
+    grid.appendChild(div);
+  }
+  if(types.lek) { addResult('ТК1 (Лекции)', fmt(tk.lek.tk1)); addResult('ТК2 (Лекции)', fmt(tk.lek.tk2)); }
+  if(types.prak) { addResult('ТК1 (Практика)', fmt(tk.prak.tk1)); addResult('ТК2 (Практика)', fmt(tk.prak.tk2)); }
+  if(types.lab) { addResult('ТК1 (Лаб)', fmt(tk.lab.tk1)); addResult('ТК2 (Лаб)', fmt(tk.lab.tk2)); }
+  if(types.srop) { addResult('ТК1 (СРОП)', fmt(sropTk1)); addResult('ТК2 (СРОП)', fmt(sropTk2)); }
+  addResult('ТКобщ1', fmt(tkObsh1), 'color-accent');
+  addResult('ТКобщ2', fmt(tkObsh2), 'color-accent');
+  addResult('РК1', fmt(rk1));
+  addResult('РК2', fmt(rk2));
+  addResult('Р1', fmt(p1), 'color-accent');
+  addResult('Р2', fmt(p2), 'color-accent');
+  const rdColor = rd===null?'':(rd>=50?'color-green':'color-red');
+  addResult('РД (Рейтинг допуска)', fmt(rd), rdColor);
+  if(examRaw !== null) addResult('ИК (Экзамен)', fmt(examRaw));
+  if(io !== null) addResult('ИО (Итоговая)', fmt(io), io>=50?'color-green':'color-red');
+
+  const statusDiv = document.getElementById('statusBadge');
+  if(dopusk === null) statusDiv.innerHTML = `<span class="status-badge unknown">Недостаточно данных для определения допуска</span>`;
+  else if(dopusk) statusDiv.innerHTML = `<span class="status-badge allowed">✓ Допущен к экзамену</span>`;
+  else statusDiv.innerHTML = `<span class="status-badge denied">✗ Не допущен: ${dopuskReasons.join(' · ')}</span>`;
+
+  const det = document.getElementById('detailBlock');
+  let detHtml = '';
+  detHtml += `Р1 = 0.7 × ТКобщ1 + 0.3 × РК1 = 0.7 × <span>${fmt(tkObsh1)}</span> + 0.3 × <span>${fmt(rk1)}</span> = <span>${fmt(p1)}</span><br>`;
+  detHtml += `Р2 = 0.7 × ТКобщ2 + 0.3 × РК2 = 0.7 × <span>${fmt(tkObsh2)}</span> + 0.3 × <span>${fmt(rk2)}</span> = <span>${fmt(p2)}</span><br>`;
+  detHtml += `РД = (Р1 + Р2) / 2 = (<span>${fmt(p1)}</span> + <span>${fmt(p2)}</span>) / 2 = <span>${fmt(rd)}</span><br>`;
+  if(io !== null) detHtml += `ИО = 0.6 × РД + 0.4 × ИК = 0.6 × <span>${fmt(rd)}</span> + 0.4 × <span>${fmt(examRaw)}</span> = <span>${fmt(io)}</span>`;
+  det.innerHTML = detHtml;
+
+  const fgBlock = document.getElementById('finalGradeBlock');
+  const scoreForGrade = io !== null ? io : rd;
+  if(scoreForGrade !== null) {
+    const g = getLetterGrade(scoreForGrade);
+    const label = io!==null ? 'Итоговая оценка' : 'Оценка по рейтингу допуска';
+    fgBlock.style.display='block';
+    fgBlock.innerHTML = `<div class="grade-letter">${g.letter}</div><div class="grade-trad">${g.trad} · GPA ${g.gpa} · ${label}</div>`;
+  } else fgBlock.style.display='none';
+
+  document.getElementById('resultCard').style.display='block';
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+}
+
+buildJournal();
+</script>
+</body>
+</html>

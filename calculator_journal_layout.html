@@ -66,13 +66,6 @@
     letter-spacing: 0.03em;
   }
   .grade-table td { background: var(--surface); }
-  .grade-table td.shared-cell {
-    background: #0f1c32;
-    border-left: 2px solid #2563eb;
-    border-right: 2px solid #2563eb;
-  }
-  .grade-table td.shared-cell:first-of-type { border-top: 2px solid #2563eb; }
-  .grade-table td.shared-cell-last { border-bottom: 2px solid #2563eb; }
 
   .week-input {
     width: 46px;
@@ -100,10 +93,43 @@
     padding: 6px;
     font-size: 0.72rem;
     font-family: 'Onest', sans-serif;
+    transition: all 0.2s;
   }
   .rk-input:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(37,99,235,0.25); }
   .rk-input.np { color: #475569; }
   .rk-input.nya { color: #e879f9; }
+
+  /* Автомат — поле экзамена зелёное, readonly-стиль */
+  .rk-input.avtomat {
+    background: #052e16;
+    border: 2px solid #10b981;
+    color: #6ee7b7;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(16,185,129,0.35);
+    cursor: default;
+  }
+
+  /* Обёртка экзамена: лейбл АВТОМАТ сверху */
+  .exam-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .avtomat-label {
+    display: none;
+    font-size: 0.5rem;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    color: #10b981;
+    letter-spacing: 0.1em;
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.4);
+    border-radius: 4px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .exam-wrapper.is-avtomat .avtomat-label { display: block; }
 
   .result-cell {
     font-weight: 600;
@@ -111,12 +137,7 @@
     font-size: 0.75rem;
     color: var(--accent2);
   }
-  .result-cell.shared {
-    color: #60a5fa;
-    font-size: 0.82rem;
-  }
-  .result-cell.green { color: var(--green); }
-  .result-cell.red { color: var(--red); }
+  .result-cell.shared { color: #60a5fa; font-size: 0.82rem; }
 
   .discipline-label {
     font-weight: 600;
@@ -174,6 +195,12 @@
     border-radius: 10px;
     padding: 12px 8px;
     text-align: center;
+    transition: all 0.2s;
+  }
+  .result-item.highlight-avtomat {
+    background: #052e16;
+    border-color: #10b981;
+    box-shadow: 0 0 14px rgba(16,185,129,0.2);
   }
   .result-item .val {
     font-family: 'Unbounded', sans-serif;
@@ -182,6 +209,7 @@
     display: block;
   }
   .result-item .lbl { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; display: block; }
+
   .status-badge {
     display: inline-flex;
     align-items: center;
@@ -192,8 +220,10 @@
     font-weight: 600;
     margin-top: 14px;
   }
-  .status-badge.allowed { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
-  .status-badge.denied { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+  .status-badge.allowed  { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .status-badge.avtomat  { background: rgba(16,185,129,0.22); color: #34d399; border: 2px solid #10b981; font-family:'Unbounded',sans-serif; letter-spacing:0.05em; }
+  .status-badge.denied   { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+
   .denied-block {
     background: rgba(239,68,68,0.1);
     border: 2px solid #ef4444;
@@ -203,6 +233,7 @@
     text-align: center;
   }
   .denied-title { font-family: 'Unbounded', sans-serif; font-size: 1.2rem; font-weight: 800; color: #ef4444; margin-bottom: 8px; }
+
   .detail-block {
     background: var(--surface2);
     border-radius: 10px;
@@ -221,6 +252,12 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  .grade-letter.avtomat-grade {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   .type-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
   .type-btn {
     padding: 6px 14px;
@@ -259,14 +296,13 @@
 <div style="max-width:1600px;margin:0 auto;">
   <div class="header">
     <h1>Калькулятор оценок || by N3XT || SIBk-23-6</h1>
-    <!--<div class="subtitle">АУЭС им. Гумарбека Даукеева · 2025–2026</div>-->
   </div>
 
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
     <div class="type-buttons">
-      <button class="type-btn active" data-type="lek" onclick="toggleType('lek',this)">Лекция</button>
+      <button class="type-btn active" data-type="lek"  onclick="toggleType('lek',this)">Лекция</button>
       <button class="type-btn active" data-type="prak" onclick="toggleType('prak',this)">Практика</button>
-      <button class="type-btn active" data-type="lab" onclick="toggleType('lab',this)">Лаборатория</button>
+      <button class="type-btn active" data-type="lab"  onclick="toggleType('lab',this)">Лаборатория</button>
       <button class="type-btn active" data-type="srsp" onclick="toggleType('srsp',this)">СРСП</button>
     </div>
     <div class="np-toggle">
@@ -278,23 +314,18 @@
   <div class="table-wrapper">
     <table class="grade-table" id="mainTable">
       <thead>
-        <!-- Row 1: section labels -->
         <tr class="section-header">
           <th rowspan="2" style="min-width:140px;">Дисциплина</th>
           <th colspan="7">1 семестр (недели 1–7)</th>
           <th rowspan="2">ТК1</th>
-          <!-- Shared: TK1obsh, RK1, P1 -->
           <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">ТК1<br>ОБЩ.</th>
           <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">РК1</th>
           <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">Р1</th>
-          <!-- Weeks 8-15 -->
           <th colspan="8">2 семестр (недели 8–15)</th>
           <th rowspan="2">ТК2</th>
-          <!-- Shared: TK2obsh, RK2, P2 -->
           <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">ТК2<br>ОБЩ.</th>
           <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">РК2</th>
           <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">Р2</th>
-          <!-- Final shared -->
           <th rowspan="2" style="background:#0a1628;border:1px solid #1d4ed8;color:#60a5fa;">РД</th>
           <th rowspan="2" style="background:#0a1628;border:1px solid #1d4ed8;color:#60a5fa;">Экзамен</th>
           <th rowspan="2" style="background:#0a1628;border:1px solid #1d4ed8;color:#60a5fa;">ИО</th>
@@ -324,10 +355,10 @@
   </div>
 
   <div class="info-row">
-    <h1>hello</h1>
     <div class="info-box"><strong style="color:#93c5fd;">НП</strong> — не предусмотрено &nbsp;|&nbsp; <strong style="color:#e879f9;">НЯ</strong> — не явка (0)</div>
     <div class="info-box"><strong style="color:#93c5fd;">Допуск:</strong> РК1≥25, РК2≥25, (РК1+РК2)/2≥50, РД≥50 → иначе ИО=0 (F)</div>
     <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
+    <div class="info-box"><strong style="color:#10b981;">🏆 Автомат:</strong> нет ни одной НЯ → РД ставится в поле экзамена автоматически</div>
   </div>
 </div>
 
@@ -336,17 +367,15 @@ const types = { lek: true, prak: true, lab: true, srsp: true };
 const colors = { lek: '#3b82f6', prak: '#10b981', lab: '#f59e0b', srsp: '#8b5cf6' };
 const names  = { lek: 'Лекция', prak: 'Практика', lab: 'Лаборатория', srsp: 'СРСП' };
 
-// Weight coefficients depending on active types
 function getCoef(type) {
-  const l = types.lek, p = types.prak, b = types.lab, s = types.srsp;
-  const active = [l&&'lek', p&&'prak', b&&'lab', s&&'srsp'].filter(Boolean);
+  const l=types.lek, p=types.prak, b=types.lab, s=types.srsp;
+  const active=[l&&'lek',p&&'prak',b&&'lab',s&&'srsp'].filter(Boolean);
   if(!active.includes(type)) return 0;
-  // Presets
-  if(l&&p&&b&&s) return {lek:0.2,prak:0.3,lab:0.3,srsp:0.2}[type];
-  if(l&&p&&b&&!s) return {lek:0.25,prak:0.4,lab:0.35}[type]||0;
-  if(l&&p&&!b&&s) return {lek:0.25,prak:0.5,lab:0,srsp:0.25}[type]||0;
-  if(l&&!p&&b&&s) return {lek:0.25,prak:0,lab:0.5,srsp:0.25}[type]||0;
-  if(!l&&p&&b&&s) return {lek:0,prak:0.4,lab:0.4,srsp:0.2}[type]||0;
+  if(l&&p&&b&&s)   return {lek:0.2,prak:0.3,lab:0.3,srsp:0.2}[type];
+  if(l&&p&&b&&!s)  return {lek:0.25,prak:0.4,lab:0.35}[type]||0;
+  if(l&&p&&!b&&s)  return {lek:0.25,prak:0.5,lab:0,srsp:0.25}[type]||0;
+  if(l&&!p&&b&&s)  return {lek:0.25,prak:0,lab:0.5,srsp:0.25}[type]||0;
+  if(!l&&p&&b&&s)  return {lek:0,prak:0.4,lab:0.4,srsp:0.2}[type]||0;
   if(l&&p&&!b&&!s) return {lek:0.35,prak:0.65}[type]||0;
   if(l&&!p&&b&&!s) return {lek:0.4,lab:0.6}[type]||0;
   if(!l&&p&&b&&!s) return {prak:0.5,lab:0.5}[type]||0;
@@ -362,27 +391,37 @@ function getCoef(type) {
 
 function parseVal(v) {
   if(v===undefined||v===null) return null;
-  const str = String(v).trim();
+  const str=String(v).trim();
   if(str==='') return null;
-  const u = str.toUpperCase();
+  const u=str.toUpperCase();
   if(u==='НП') return null;
   if(u==='НЯ') return 0;
-  const n = parseFloat(str.replace(',','.'));
+  const n=parseFloat(str.replace(',','.'));
   return isNaN(n)?null:Math.min(100,Math.max(0,n));
 }
 function round2(x){ return x!==null?Math.round(x*100)/100:null; }
 function avg(arr){ const f=arr.filter(v=>v!==null); return f.length?round2(f.reduce((a,b)=>a+b,0)/f.length):null; }
 
 function updateStyle(el, isRk=false) {
-  const v = el.value.trim().toUpperCase();
+  const v=el.value.trim().toUpperCase();
   el.classList.remove('np','nya');
   if(v===''||v==='НП') el.classList.add('np');
   else if(v==='НЯ') el.classList.add('nya');
 }
-function handleFocus(el){ if(el.value.trim().toUpperCase()==='НП') el.select(); }
+function handleFocus(el){
+  // Если фокус на экзамене и он был автоматом — сбросить, дать ввести вручную
+  if(el.id==='exam' && el.classList.contains('avtomat')){
+    el.classList.remove('avtomat');
+    el.value='НП';
+    updateStyle(el, true);
+    const wr=document.getElementById('examWrapper');
+    if(wr) wr.classList.remove('is-avtomat');
+  }
+  if(el.value.trim().toUpperCase()==='НП') el.select();
+}
 function handleBlur(el){
-  let v = el.value.trim();
-  if(v==='') { el.value='НП'; updateStyle(el); return; }
+  let v=el.value.trim();
+  if(v===''){ el.value='НП'; updateStyle(el); return; }
   const u=v.toUpperCase();
   if(u==='НП'||u==='НЯ'){ el.value=u; updateStyle(el); return; }
   const n=parseFloat(v.replace(',','.'));
@@ -391,61 +430,56 @@ function handleBlur(el){
 }
 
 function makeInput(id, isRk=false) {
-  const inp = document.createElement('input');
-  inp.type = 'text';
-  inp.className = isRk ? 'rk-input np' : 'week-input np';
-  inp.value = 'НП';
-  inp.id = id;
-  if(!isRk) inp.style.width = '46px';
-  inp.onfocus = () => handleFocus(inp);
-  inp.oninput  = () => updateStyle(inp, isRk);
-  inp.onblur   = () => handleBlur(inp);
+  const inp=document.createElement('input');
+  inp.type='text';
+  inp.className=isRk?'rk-input np':'week-input np';
+  inp.value='НП';
+  inp.id=id;
+  if(!isRk) inp.style.width='46px';
+  inp.onfocus=()=>handleFocus(inp);
+  inp.oninput =()=>updateStyle(inp,isRk);
+  inp.onblur  =()=>handleBlur(inp);
   return inp;
 }
 
 function buildTable() {
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
-  const disciplines = ['lek','prak','lab','srsp'];
+  const tbody=document.getElementById('tableBody');
+  tbody.innerHTML='';
+  const disciplines=['lek','prak','lab','srsp'];
 
-  disciplines.forEach((type, idx) => {
-    const tr = document.createElement('tr');
-    tr.id = `row-${type}`;
+  disciplines.forEach((type,idx)=>{
+    const tr=document.createElement('tr');
+    tr.id=`row-${type}`;
     if(!types[type]) tr.style.opacity='0.4';
 
-    // Discipline name
-    const tdName = document.createElement('td');
-    tdName.className = 'discipline-label';
-    tdName.innerHTML = `<span class="dot" style="background:${colors[type]}"></span>${names[type]}`;
+    const tdName=document.createElement('td');
+    tdName.className='discipline-label';
+    tdName.innerHTML=`<span class="dot" style="background:${colors[type]}"></span>${names[type]}`;
     tr.appendChild(tdName);
 
-    // Weeks 1-7
     for(let w=1;w<=7;w++){
       const td=document.createElement('td');
       td.appendChild(makeInput(`${type}-w${w}`));
       tr.appendChild(td);
     }
 
-    // ТК1 (avg weeks 1-7 for this discipline)
     const tdTk1=document.createElement('td');
     tdTk1.id=`tk1-${type}`; tdTk1.textContent='—'; tdTk1.className='result-cell';
     tr.appendChild(tdTk1);
 
-    // === SHARED CELLS (only first row gets rowspan=4) ===
     if(idx===0){
-      // ТК1ОБЩ
       const tdTk1o=document.createElement('td');
       tdTk1o.id='tk1obsh'; tdTk1o.textContent='—';
       tdTk1o.className='result-cell shared'; tdTk1o.rowSpan=4;
       tdTk1o.style.cssText='background:#0a1628;border:1px solid #1e3a5f;';
       tr.appendChild(tdTk1o);
-      // РК1
+
       const tdRk1=document.createElement('td');
       tdRk1.rowSpan=4;
       tdRk1.style.cssText='background:#0a1628;border:1px solid #1e3a5f;';
       tdRk1.appendChild(makeInput('rk1',true));
       tr.appendChild(tdRk1);
-      // Р1
+
       const tdP1=document.createElement('td');
       tdP1.id='p1'; tdP1.textContent='—';
       tdP1.className='result-cell shared'; tdP1.rowSpan=4;
@@ -453,57 +487,62 @@ function buildTable() {
       tr.appendChild(tdP1);
     }
 
-    // Weeks 8-15
     for(let w=8;w<=15;w++){
       const td=document.createElement('td');
       td.appendChild(makeInput(`${type}-w${w}`));
       tr.appendChild(td);
     }
 
-    // ТК2 (avg weeks 8-15 for this discipline)
     const tdTk2=document.createElement('td');
     tdTk2.id=`tk2-${type}`; tdTk2.textContent='—'; tdTk2.className='result-cell';
     tr.appendChild(tdTk2);
 
-    // === SHARED CELLS second half (only first row) ===
     if(idx===0){
-      // ТК2ОБЩ
       const tdTk2o=document.createElement('td');
       tdTk2o.id='tk2obsh'; tdTk2o.textContent='—';
       tdTk2o.className='result-cell shared'; tdTk2o.rowSpan=4;
       tdTk2o.style.cssText='background:#0a1628;border:1px solid #1e3a5f;';
       tr.appendChild(tdTk2o);
-      // РК2
+
       const tdRk2=document.createElement('td');
       tdRk2.rowSpan=4;
       tdRk2.style.cssText='background:#0a1628;border:1px solid #1e3a5f;';
       tdRk2.appendChild(makeInput('rk2',true));
       tr.appendChild(tdRk2);
-      // Р2
+
       const tdP2=document.createElement('td');
       tdP2.id='p2'; tdP2.textContent='—';
       tdP2.className='result-cell shared'; tdP2.rowSpan=4;
       tdP2.style.cssText='background:#0a1628;border:1px solid #1e3a5f;';
       tr.appendChild(tdP2);
-      // РД
+
       const tdRd=document.createElement('td');
       tdRd.id='rd'; tdRd.textContent='—';
       tdRd.className='result-cell'; tdRd.rowSpan=4;
       tdRd.style.cssText='background:#060e1f;border:1px solid #1e3a5f;font-size:0.85rem;';
       tr.appendChild(tdRd);
-      // Экзамен
+
+      // Экзамен с обёрткой
       const tdEx=document.createElement('td');
       tdEx.rowSpan=4;
       tdEx.style.cssText='background:#060e1f;border:1px solid #1e3a5f;';
-      tdEx.appendChild(makeInput('exam',true));
+      const examWrapper=document.createElement('div');
+      examWrapper.className='exam-wrapper';
+      examWrapper.id='examWrapper';
+      const lbl=document.createElement('span');
+      lbl.className='avtomat-label';
+      lbl.textContent='🏆 АВТОМАТ';
+      examWrapper.appendChild(lbl);
+      examWrapper.appendChild(makeInput('exam',true));
+      tdEx.appendChild(examWrapper);
       tr.appendChild(tdEx);
-      // ИО
+
       const tdIo=document.createElement('td');
       tdIo.id='io'; tdIo.textContent='—';
       tdIo.className='result-cell'; tdIo.rowSpan=4;
       tdIo.style.cssText='background:#060e1f;border:1px solid #1e3a5f;font-size:0.85rem;';
       tr.appendChild(tdIo);
-      // Буква
+
       const tdGr=document.createElement('td');
       tdGr.id='grade'; tdGr.textContent='—';
       tdGr.className='result-cell'; tdGr.rowSpan=4;
@@ -524,11 +563,13 @@ function setAllNp(isNp){
   }
   ['rk1','rk2','exam'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el){ el.value=isNp?'НП':''; updateStyle(el,true); }
+    if(el){ el.value=isNp?'НП':''; el.classList.remove('avtomat'); updateStyle(el,true); }
   });
+  const wr=document.getElementById('examWrapper');
+  if(wr) wr.classList.remove('is-avtomat');
 }
 
-function toggleType(type, btn){
+function toggleType(type,btn){
   types[type]=!types[type];
   btn.classList.toggle('active',types[type]);
   const row=document.getElementById(`row-${type}`);
@@ -536,61 +577,59 @@ function toggleType(type, btn){
 }
 
 function getLetter(s){
-  if(s>=95)return'A'; if(s>=90)return'A−'; if(s>=85)return'B+';
+  if(s>=95)return'A';  if(s>=90)return'A−'; if(s>=85)return'B+';
   if(s>=80)return'B';  if(s>=75)return'B−'; if(s>=70)return'C+';
   if(s>=65)return'C';  if(s>=60)return'C−'; if(s>=55)return'D+';
   if(s>=50)return'D−'; if(s>=25)return'FX'; return'F';
 }
 
 function calculate(){
-  // --- Step 1: per-discipline TK1, TK2 ---
-  const tk = {};
+  // Step 1: TK1/TK2 per discipline
+  const tk={};
   for(const type of ['lek','prak','lab','srsp']){
-    const w1to7  = [], w8to15 = [];
-    for(let w=1;w<=7;w++)  w1to7.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
-    for(let w=8;w<=15;w++) w8to15.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
-    tk[type] = { tk1: avg(w1to7), tk2: avg(w8to15) };
-    const el1=document.getElementById(`tk1-${type}`);
-    const el2=document.getElementById(`tk2-${type}`);
-    if(el1) el1.textContent = tk[type].tk1!==null ? tk[type].tk1.toFixed(2) : '—';
-    if(el2) el2.textContent = tk[type].tk2!==null ? tk[type].tk2.toFixed(2) : '—';
+    const w1=[],w2=[];
+    for(let w=1;w<=7;w++)  w1.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
+    for(let w=8;w<=15;w++) w2.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
+    tk[type]={tk1:avg(w1),tk2:avg(w2)};
+    const e1=document.getElementById(`tk1-${type}`);
+    const e2=document.getElementById(`tk2-${type}`);
+    if(e1) e1.textContent=tk[type].tk1!==null?tk[type].tk1.toFixed(2):'—';
+    if(e2) e2.textContent=tk[type].tk2!==null?tk[type].tk2.toFixed(2):'—';
   }
 
-  // --- Step 2: TKобщ1 and TKобщ2 (weighted average of active disciplines) ---
-  function calcTKObsh(semester){
-    const key = semester===1?'tk1':'tk2';
-    let sumW=0, sumV=0;
-    for(const type of ['lek','prak','lab','srsp']){
-      const c=getCoef(type);
-      if(!c||!types[type]) continue;
-      const v=tk[type][key];
+  // Step 2: TKобщ
+  function calcTKObsh(sem){
+    const key=sem===1?'tk1':'tk2';
+    let sW=0,sV=0;
+    for(const t of ['lek','prak','lab','srsp']){
+      const c=getCoef(t);
+      if(!c||!types[t]) continue;
+      const v=tk[t][key];
       if(v===null) continue;
-      sumW+=c; sumV+=c*v;
+      sW+=c; sV+=c*v;
     }
-    return sumW>0 ? round2(sumV/sumW) : null;
+    return sW>0?round2(sV/sW):null;
   }
-  const tkObsh1 = calcTKObsh(1);
-  const tkObsh2 = calcTKObsh(2);
-  const tk1El=document.getElementById('tk1obsh');
-  const tk2El=document.getElementById('tk2obsh');
-  if(tk1El) tk1El.textContent = tkObsh1!==null ? tkObsh1.toFixed(2) : '—';
-  if(tk2El) tk2El.textContent = tkObsh2!==null ? tkObsh2.toFixed(2) : '—';
+  const tkObsh1=calcTKObsh(1), tkObsh2=calcTKObsh(2);
+  const tke1=document.getElementById('tk1obsh'), tke2=document.getElementById('tk2obsh');
+  if(tke1) tke1.textContent=tkObsh1!==null?tkObsh1.toFixed(2):'—';
+  if(tke2) tke2.textContent=tkObsh2!==null?tkObsh2.toFixed(2):'—';
 
-  // --- Step 3: RK1, RK2 ---
-  const rk1 = parseVal(document.getElementById('rk1')?.value);
-  const rk2 = parseVal(document.getElementById('rk2')?.value);
+  // Step 3: RK
+  const rk1=parseVal(document.getElementById('rk1')?.value);
+  const rk2=parseVal(document.getElementById('rk2')?.value);
 
-  // --- Step 4: P1, P2 ---
-  let p1=null, p2=null;
-  if(tkObsh1!==null && rk1!==null) p1=round2(0.7*tkObsh1+0.3*rk1);
+  // Step 4: P1, P2
+  let p1=null,p2=null;
+  if(tkObsh1!==null&&rk1!==null) p1=round2(0.7*tkObsh1+0.3*rk1);
   else if(tkObsh1!==null) p1=tkObsh1;
-  if(tkObsh2!==null && rk2!==null) p2=round2(0.7*tkObsh2+0.3*rk2);
+  if(tkObsh2!==null&&rk2!==null) p2=round2(0.7*tkObsh2+0.3*rk2);
   else if(tkObsh2!==null) p2=tkObsh2;
-  const p1El=document.getElementById('p1'); const p2El=document.getElementById('p2');
+  const p1El=document.getElementById('p1'), p2El=document.getElementById('p2');
   if(p1El){ p1El.textContent=p1!==null?p1.toFixed(2):'—'; p1El.style.color=p1!==null&&p1>=50?'#34d399':'#f87171'; }
   if(p2El){ p2El.textContent=p2!==null?p2.toFixed(2):'—'; p2El.style.color=p2!==null&&p2>=50?'#34d399':'#f87171'; }
 
-  // --- Step 5: РД ---
+  // Step 5: РД
   let rd=null;
   if(p1!==null&&p2!==null) rd=round2((p1+p2)/2);
   else if(p1!==null) rd=p1;
@@ -598,33 +637,82 @@ function calculate(){
   const rdEl=document.getElementById('rd');
   if(rdEl){ rdEl.textContent=rd!==null?rd.toFixed(2):'—'; rdEl.style.color=rd!==null&&rd>=50?'#34d399':'#f87171'; }
 
-  // --- Step 6: допуск ---
+  // Step 6: допуск
   let dopusk=null, reasons=[];
   if(rk1!==null&&rk2!==null&&rd!==null){
     dopusk=true;
     if(rk1<25){ dopusk=false; reasons.push(`РК1 = ${rk1.toFixed(2)} < 25`); }
     if(rk2<25){ dopusk=false; reasons.push(`РК2 = ${rk2.toFixed(2)} < 25`); }
-    const avg2=(rk1+rk2)/2;
-    if(avg2<50){ dopusk=false; reasons.push(`(РК1+РК2)/2 = ${avg2.toFixed(2)} < 50`); }
+    const a2=(rk1+rk2)/2;
+    if(a2<50){ dopusk=false; reasons.push(`(РК1+РК2)/2 = ${a2.toFixed(2)} < 50`); }
     if(rd<50){ dopusk=false; reasons.push(`РД = ${rd.toFixed(2)} < 50`); }
   }
 
-  // --- Step 7: ИО ---
-  const exam=parseVal(document.getElementById('exam')?.value);
+  // Step 7: Автомат — нет ни одной НЯ/0 среди введённых оценок
+  let hasNya=false;
+  outer: for(const type of ['lek','prak','lab','srsp']){
+    if(!types[type]) continue;
+    for(let w=1;w<=15;w++){
+      const el=document.getElementById(`${type}-w${w}`);
+      if(!el) continue;
+      const raw=el.value.trim().toUpperCase();
+      if(raw==='НП'||raw==='') continue;
+      if(parseVal(el.value)===0){ hasNya=true; break outer; }
+    }
+  }
+  if(!hasNya){
+    for(const id of ['rk1','rk2']){
+      const el=document.getElementById(id);
+      if(!el) continue;
+      const raw=el.value.trim().toUpperCase();
+      if(raw==='НП'||raw==='') continue;
+      if(parseVal(el.value)===0){ hasNya=true; break; }
+    }
+  }
+
+  const examEl=document.getElementById('exam');
+  const examWrapper=document.getElementById('examWrapper');
+  // Вручную введено = есть значение И поле НЕ было помечено автоматом ранее
+  const wasAvtomat=examEl.classList.contains('avtomat');
+  const examRaw=examEl.value.trim().toUpperCase();
+  const examManual = examRaw!=='' && examRaw!=='НП' && !wasAvtomat;
+
+  // Автомат срабатывает: допущен + нет НЯ + нет ручного ввода + есть РД
+  const isAvtomat = dopusk!==false && !hasNya && !examManual && rd!==null;
+
+  // Применяем автомат к полю экзамена
+  if(isAvtomat){
+    examEl.value=rd.toFixed(2);
+    examEl.classList.remove('np','nya');
+    examEl.classList.add('avtomat');
+    if(examWrapper) examWrapper.classList.add('is-avtomat');
+  } else if(!examManual){
+    // Не автомат и не введён вручную — сбросить если был авт.
+    if(wasAvtomat){
+      examEl.value='НП';
+      examEl.classList.remove('avtomat');
+      updateStyle(examEl,true);
+    }
+    if(examWrapper) examWrapper.classList.remove('is-avtomat');
+  }
+
+  const examForCalc=parseVal(examEl.value);
+
+  // Step 8: ИО
   let io=null;
   if(dopusk===false) io=0;
-  else if(rd!==null&&exam!==null) io=round2(0.6*rd+0.4*exam);
+  else if(rd!==null&&examForCalc!==null) io=round2(0.6*rd+0.4*examForCalc);
   const ioEl=document.getElementById('io');
   if(ioEl){ ioEl.textContent=io!==null?io.toFixed(2):'—'; ioEl.style.color=io!==null&&io>=50?'#34d399':'#f87171'; }
 
-  // --- Step 8: Letter grade ---
-  const finalGrade = io!==null ? getLetter(io) : (dopusk===false?'F':'—');
+  // Step 9: буква
+  const finalGrade=io!==null?getLetter(io):(dopusk===false?'F':'—');
   const gradeEl=document.getElementById('grade');
   if(gradeEl) gradeEl.textContent=finalGrade;
 
-  // --- Results panel ---
+  // Результаты
   const grid=document.getElementById('resultGrid');
-  const cv=(v,good)=>v!==null?`color:${v>=good?'#34d399':'#f87171'}`:'';
+  const cv=(v,g)=>v!==null?`color:${v>=g?'#34d399':'#f87171'}`:'';
   grid.innerHTML=`
     <div class="result-item"><span class="val">${tkObsh1!==null?tkObsh1.toFixed(2):'—'}</span><span class="lbl">ТКобщ1</span></div>
     <div class="result-item"><span class="val">${rk1!==null?rk1.toFixed(2):'—'}</span><span class="lbl">РК1</span></div>
@@ -633,15 +721,22 @@ function calculate(){
     <div class="result-item"><span class="val">${rk2!==null?rk2.toFixed(2):'—'}</span><span class="lbl">РК2</span></div>
     <div class="result-item"><span class="val" style="${cv(p2,50)}">${p2!==null?p2.toFixed(2):'—'}</span><span class="lbl">Р2</span></div>
     <div class="result-item"><span class="val" style="${cv(rd,50)}">${rd!==null?rd.toFixed(2):'—'}</span><span class="lbl">РД</span></div>
-    <div class="result-item"><span class="val">${exam!==null?exam.toFixed(2):'—'}</span><span class="lbl">Экзамен</span></div>
+    <div class="result-item ${isAvtomat?'highlight-avtomat':''}">
+      <span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?examForCalc.toFixed(2):'—'}</span>
+      <span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span>
+    </div>
     <div class="result-item"><span class="val" style="${cv(io,50)}">${io!==null?io.toFixed(2):'—'}</span><span class="lbl">ИО</span></div>
     <div class="result-item"><span class="val" style="color:#60a5fa">${finalGrade}</span><span class="lbl">Буквенная</span></div>
   `;
 
+  // Статус
   const statusDiv=document.getElementById('statusBadge');
   const deniedBlock=document.getElementById('deniedBlock');
   if(dopusk===null){
-    statusDiv.innerHTML=`<span class="status-badge" style="background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid #334155;">❓ Недостаточно данных для проверки допуска</span>`;
+    statusDiv.innerHTML=`<span class="status-badge" style="background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid #334155;">❓ Недостаточно данных</span>`;
+    deniedBlock.style.display='none';
+  } else if(dopusk&&isAvtomat){
+    statusDiv.innerHTML=`<span class="status-badge avtomat">🏆 АВТОМАТ — экзамен не нужен!</span>`;
     deniedBlock.style.display='none';
   } else if(dopusk){
     statusDiv.innerHTML=`<span class="status-badge allowed">✓ Допущен к экзамену</span>`;
@@ -654,21 +749,27 @@ function calculate(){
 
   const det=document.getElementById('detailBlock');
   det.innerHTML=`
-    <span style="color:#60a5fa">ТКобщ1</span> = взвешенная средняя по дисциплинам = <strong>${tkObsh1!==null?tkObsh1.toFixed(2):'—'}</strong><br>
+    <span style="color:#60a5fa">ТКобщ1</span> = взвешенная средняя = <strong>${tkObsh1!==null?tkObsh1.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">Р1</span> = 0.7 × ${tkObsh1!==null?tkObsh1.toFixed(2):'—'} + 0.3 × ${rk1!==null?rk1.toFixed(2):'—'} = <strong>${p1!==null?p1.toFixed(2):'—'}</strong><br>
-    <span style="color:#60a5fa">ТКобщ2</span> = взвешенная средняя по дисциплинам = <strong>${tkObsh2!==null?tkObsh2.toFixed(2):'—'}</strong><br>
+    <span style="color:#60a5fa">ТКобщ2</span> = взвешенная средняя = <strong>${tkObsh2!==null?tkObsh2.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">Р2</span> = 0.7 × ${tkObsh2!==null?tkObsh2.toFixed(2):'—'} + 0.3 × ${rk2!==null?rk2.toFixed(2):'—'} = <strong>${p2!==null?p2.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">РД</span> = (${p1!==null?p1.toFixed(2):'—'} + ${p2!==null?p2.toFixed(2):'—'}) / 2 = <strong>${rd!==null?rd.toFixed(2):'—'}</strong><br>
-    ${io!==null && dopusk!==false
-      ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?rd.toFixed(2):'—'} + 0.4 × ${exam!==null?exam.toFixed(2):'—'} = <strong>${io.toFixed(2)}</strong>`
-      : dopusk===false ? '<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>' : ''}
+    ${isAvtomat
+      ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?rd.toFixed(2):'—'} → ИО = 0.6 × ${rd.toFixed(2)} + 0.4 × ${rd.toFixed(2)} = <strong>${io!==null?io.toFixed(2):'—'}</strong>`
+      : io!==null&&dopusk!==false
+        ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?rd.toFixed(2):'—'} + 0.4 × ${examForCalc!==null?examForCalc.toFixed(2):'—'} = <strong>${io.toFixed(2)}</strong>`
+        : dopusk===false?'<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>':''
+    }
   `;
 
   const fgBlock=document.getElementById('finalGradeBlock');
-  if(io!==null || dopusk===false){
+  if(io!==null||dopusk===false){
     fgBlock.style.display='block';
-    const displayGrade = dopusk===false ? 'F' : getLetter(io);
-    fgBlock.innerHTML=`<div class="grade-letter">${displayGrade}</div><div style="color:#64748b;font-size:0.75rem;margin-top:4px;">${dopusk===false?'НЕДОПУСК':'Итоговая оценка'}</div>`;
+    const dg=dopusk===false?'F':getLetter(io);
+    fgBlock.innerHTML=`
+      <div class="grade-letter ${isAvtomat?'avtomat-grade':''}">${dg}</div>
+      <div style="color:#64748b;font-size:0.75rem;margin-top:4px;">${dopusk===false?'НЕДОПУСК':isAvtomat?'🏆 Автомат — итоговая оценка':'Итоговая оценка'}</div>
+    `;
   } else fgBlock.style.display='none';
 
   document.getElementById('resultCard').style.display='block';

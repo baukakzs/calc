@@ -278,6 +278,58 @@
     font-size: 0.62rem;
     padding: 5px;
   }
+
+  /* Автомат — поле экзамена зелёное, readonly-стиль */
+.rk-input.avtomat {
+  background: #052e16;
+  border: 2px solid #10b981;
+  color: #6ee7b7;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(16,185,129,0.35);
+  cursor: default;
+}
+
+/* Обёртка экзамена: лейбл АВТОМАТ сверху */
+.exam-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.avtomat-label {
+  display: none;
+  font-size: 0.5rem;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 700;
+  color: #10b981;
+  letter-spacing: 0.1em;
+  background: rgba(16,185,129,0.15);
+  border: 1px solid rgba(16,185,129,0.4);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+.exam-wrapper.is-avtomat .avtomat-label { display: block; }
+
+.result-item.highlight-avtomat {
+  background: #052e16;
+  border-color: #10b981;
+  box-shadow: 0 0 14px rgba(16,185,129,0.2);
+}
+
+.status-badge.avtomat {
+  background: rgba(16,185,129,0.22);
+  color: #34d399;
+  border: 2px solid #10b981;
+  font-family:'Unbounded',sans-serif;
+  letter-spacing:0.05em;
+}
+
+.grade-letter.avtomat-grade {
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 </style>
 </head>
 <body>
@@ -357,6 +409,7 @@
     <div class="info-box"><strong style="color:#93c5fd;">НП</strong> — не предусмотрено &nbsp;|&nbsp; <strong style="color:#e879f9;">НЯ</strong> — не явка (0)</div>
     <div class="info-box"><strong style="color:#93c5fd;">Допуск:</strong> РК1≥25, РК2≥25, (РК1+РК2)/2≥50, РД≥50 → иначе ИО=0 (F)</div>
     <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
+    <div class="info-box"><strong style="color:#10b981;">🏆 Автомат:</strong> нет ни одной НЯ → РД ставится в поле экзамена автоматически</div>
   </div>
 </div>
 
@@ -408,7 +461,17 @@ function updateStyle(el, isRk=false) {
   if(v===''||v==='НП') el.classList.add('np');
   else if(v==='НЯ') el.classList.add('nya');
 }
-function handleFocus(el){ if(el.value.trim().toUpperCase()==='НП') el.select(); }
+function handleFocus(el){
+  // Если фокус на экзамене и он был автоматом — сбросить, дать ввести вручную
+  if(el.id==='exam' && el.classList.contains('avtomat')){
+    el.classList.remove('avtomat');
+    el.value='НП';
+    updateStyle(el, true);
+    const wr=document.getElementById('examWrapper');
+    if(wr) wr.classList.remove('is-avtomat');
+  }
+  if(el.value.trim().toUpperCase()==='НП') el.select();
+}
 function handleBlur(el){
   let v = el.value.trim();
 
@@ -550,7 +613,15 @@ function buildTable() {
       const tdEx=document.createElement('td');
       tdEx.rowSpan=4;
       tdEx.style.cssText='background:#060e1f;border:1px solid #1e3a5f;';
-      tdEx.appendChild(makeInput('exam',true));
+      const examWrapper=document.createElement('div');
+      examWrapper.className='exam-wrapper';
+      examWrapper.id='examWrapper';
+      const lbl=document.createElement('span');
+      lbl.className='avtomat-label';
+      lbl.textContent='🏆 АВТОМАТ';
+      examWrapper.appendChild(lbl);
+      examWrapper.appendChild(makeInput('exam',true));
+      tdEx.appendChild(examWrapper);
       tr.appendChild(tdEx);
       // ИО
       const tdIo=document.createElement('td');
@@ -571,6 +642,8 @@ function buildTable() {
 }
 
 function setAllNp(isNp){
+  const wr=document.getElementById('examWrapper');
+  if(wr) wr.classList.remove('is-avtomat');
   for(const type of ['lek','prak','lab','srsp']){
     for(let w=1;w<=15;w++){
       const el=document.getElementById(`${type}-w${w}`);
@@ -721,12 +794,60 @@ function calculate(){
     if(avg2<50){ dopusk=false; reasons.push(`(РК1+РК2)/2 = ${avg2.toFixed(2)} < 50`); }
     if(rd<50){ dopusk=false; reasons.push(`РД = ${rd.toFixed(2)} < 50`); }
   }
+  // Step 7: Автомат — нет ни одной НЯ/0 среди введённых оценок
+let hasNya=false;
+outer: for(const type of ['lek','prak','lab','srsp']){
+  if(!types[type]) continue;
+  for(let w=1;w<=15;w++){
+    const el=document.getElementById(`${type}-w${w}`);
+    if(!el) continue;
+    const raw=el.value.trim().toUpperCase();
+    if(raw==='НП'||raw==='') continue;
+    if(parseVal(el.value)===0){ hasNya=true; break outer; }
+  }
+}
+if(!hasNya){
+  for(const id of ['rk1','rk2']){
+    const el=document.getElementById(id);
+    if(!el) continue;
+    const raw=el.value.trim().toUpperCase();
+    if(raw==='НП'||raw==='') continue;
+    if(parseVal(el.value)===0){ hasNya=true; break; }
+  }
+}
+
+const examEl=document.getElementById('exam');
+const examWrapper=document.getElementById('examWrapper');
+const wasAvtomat=examEl.classList.contains('avtomat');
+const examRaw=examEl.value.trim().toUpperCase();
+const examManual = examRaw!=='' && examRaw!=='НП' && !wasAvtomat;
+
+// Автомат срабатывает: допущен + нет НЯ + нет ручного ввода + есть РД
+const isAvtomat = dopusk!==false && !hasNya && !examManual && rd!==null;
+
+// Применяем автомат к полю экзамена
+if(isAvtomat){
+  examEl.value=rd.toFixed(2);
+  examEl.classList.remove('np','nya');
+  examEl.classList.add('avtomat');
+  if(examWrapper) examWrapper.classList.add('is-avtomat');
+} else if(!examManual){
+  // Не автомат и не введён вручную — сбросить если был авт.
+  if(wasAvtomat){
+    examEl.value='НП';
+    examEl.classList.remove('avtomat');
+    updateStyle(examEl,true);
+  }
+  if(examWrapper) examWrapper.classList.remove('is-avtomat');
+}
+
+const examForCalc=parseVal(examEl.value);
 
   // --- Step 7: ИО ---
-  const exam=parseVal(document.getElementById('exam')?.value);
+  // const exam=parseVal(document.getElementById('exam')?.value);
   let io=null;
   if(dopusk===false) io=0;
-  else if(rd!==null&&exam!==null) io=round2(0.6*rd+0.4*exam);
+  else if(rd!==null&&examForCalc!==null) io=round2(0.6*rd+0.4*examForCalc);
   const ioEl=document.getElementById('io');
   if(ioEl){ ioEl.textContent=io!==null?io.toFixed(2):'—'; ioEl.style.color=io!==null&&io>=50?'#34d399':'#f87171'; }
 
@@ -746,7 +867,7 @@ function calculate(){
     <div class="result-item"><span class="val">${rk2!==null?rk2.toFixed(2):'—'}</span><span class="lbl">РК2</span></div>
     <div class="result-item"><span class="val" style="${cv(p2,50)}">${p2!==null?p2.toFixed(2):'—'}</span><span class="lbl">Р2</span></div>
     <div class="result-item"><span class="val" style="${cv(rd,50)}">${rd!==null?rd.toFixed(2):'—'}</span><span class="lbl">РД</span></div>
-    <div class="result-item"><span class="val">${exam!==null?exam.toFixed(2):'—'}</span><span class="lbl">Экзамен</span></div>
+    <div class="result-item ${isAvtomat?'highlight-avtomat':''}"><span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?examForCalc.toFixed(2):'—'}</span><span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span></div>
     <div class="result-item"><span class="val" style="${cv(io,50)}">${io!==null?io.toFixed(2):'—'}</span><span class="lbl">ИО</span></div>
     <div class="result-item"><span class="val" style="color:#60a5fa">${finalGrade}</span><span class="lbl">Буквенная</span></div>
   `;
@@ -755,6 +876,9 @@ function calculate(){
   const deniedBlock=document.getElementById('deniedBlock');
   if(dopusk===null){
     statusDiv.innerHTML=`<span class="status-badge" style="background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid #334155;">❓ Недостаточно данных для проверки допуска</span>`;
+    deniedBlock.style.display='none';
+  } else if(dopusk&&isAvtomat){
+    statusDiv.innerHTML=`<span class="status-badge avtomat">🏆 АВТОМАТ — экзамен не нужен!</span>`;
     deniedBlock.style.display='none';
   } else if(dopusk){
     statusDiv.innerHTML=`<span class="status-badge allowed">✓ Допущен к экзамену</span>`;
@@ -772,17 +896,22 @@ function calculate(){
     <span style="color:#60a5fa">ТКобщ2</span> = взвешенная средняя по дисциплинам = <strong>${tkObsh2!==null?tkObsh2.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">Р2</span> = 0.7 × ${tkObsh2!==null?tkObsh2.toFixed(2):'—'} + 0.3 × ${rk2!==null?rk2.toFixed(2):'—'} = <strong>${p2!==null?p2.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">РД</span> = (${p1!==null?p1.toFixed(2):'—'} + ${p2!==null?p2.toFixed(2):'—'}) / 2 = <strong>${rd!==null?rd.toFixed(2):'—'}</strong><br>
-    ${io!==null && dopusk!==false
-      ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?rd.toFixed(2):'—'} + 0.4 × ${exam!==null?exam.toFixed(2):'—'} = <strong>${io.toFixed(2)}</strong>`
-      : dopusk===false ? '<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>' : ''}
+    ${isAvtomat
+  ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?rd.toFixed(2):'—'} → ИО = 0.6 × ${rd.toFixed(2)} + 0.4 × ${rd.toFixed(2)} = <strong>${io!==null?io.toFixed(2):'—'}</strong>`
+  : io!==null&&dopusk!==false
+    ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?rd.toFixed(2):'—'} + 0.4 × ${examForCalc!==null?examForCalc.toFixed(2):'—'} = <strong>${io.toFixed(2)}</strong>`
+    : dopusk===false?'<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>':''
+}
   `;
 
   const fgBlock=document.getElementById('finalGradeBlock');
   if(io!==null || dopusk===false){
     fgBlock.style.display='block';
     const displayGrade = dopusk===false ? 'F' : getLetter(io);
-    fgBlock.innerHTML=`<div class="grade-letter">${displayGrade}</div><div style="color:#64748b;font-size:0.75rem;margin-top:4px;">${dopusk===false?'НЕДОПУСК':'Итоговая оценка'}</div>`;
-  } else fgBlock.style.display='none';
+fgBlock.innerHTML=`
+  <div class="grade-letter ${isAvtomat?'avtomat-grade':''}">${displayGrade}</div>
+  <div style="color:#64748b;font-size:0.75rem;margin-top:4px;">${dopusk===false?'НЕДОПУСК':isAvtomat?'🏆 Автомат — итоговая оценка':'Итоговая оценка'}</div>
+`;  } else fgBlock.style.display='none';
 
   document.getElementById('resultCard').style.display='block';
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});

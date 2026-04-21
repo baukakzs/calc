@@ -315,6 +315,590 @@
     font-size: 0.62rem;
     padding: 5px;
   }
+
+  /* Автомат — поле экзамена зелёное, readonly-стиль */
+.rk-input.avtomat {
+  background: #052e16;
+  border: 2px solid #10b981;
+  color: #6ee7b7;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(16,185,129,0.35);
+  cursor: default;
+}
+
+/* Обёртка экзамена: лейбл АВТОМАТ сверху */
+.exam-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.avtomat-label {
+  display: none;
+  font-size: 0.5rem;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 700;
+  color: #10b981;
+  letter-spacing: 0.1em;
+  background: rgba(16,185,129,0.15);
+  border: 1px solid rgba(16,185,129,0.4);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+.exam-wrapper.is-avtomat .avtomat-label { display: block; }
+
+.result-item.highlight-avtomat {
+  background: #052e16;
+  border-color: #10b981;
+  box-shadow: 0 0 14px rgba(16,185,129,0.2);
+}
+
+.status-badge.avtomat {
+  background: rgba(16,185,129,0.22);
+  color: #34d399;
+  border: 2px solid #10b981;
+  font-family:'Unbounded',sans-serif;
+  letter-spacing:0.05em;
+}
+
+.grade-letter.avtomat-grade {
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+ 
+@media (max-width: 1024px) {
+  .grade-table {
+    min-width: 100%;
+    font-size: 0.65rem;
+  }
+  
+  .grade-table th, .grade-table td {
+    padding: 6px 3px;
+  }
+  
+  .week-input {
+    width: 40px;
+  }
+  
+  .rk-input {
+    width: 55px;
+  }
+  
+  .discipline-label {
+    min-width: 110px;
+    font-size: 0.7rem;
+  }
+}
+ 
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.2rem;
+  }
+  
+  .grade-table {
+    min-width: 100%;
+    font-size: 0.62rem;
+  }
+  
+  .grade-table th, .grade-table td {
+    padding: 5px 2px;
+  }
+  
+  .week-input {
+    width: 35px;
+    padding: 3px 1px;
+    font-size: 0.65rem;
+  }
+  
+  .rk-input {
+    width: 50px;
+    padding: 4px;
+    font-size: 0.65rem;
+  }
+  
+  .discipline-label {
+    min-width: 100px;
+    font-size: 0.68rem;
+  }
+  
+  .btn-calc {
+    max-width: 90%;
+    padding: 12px;
+    font-size: 0.75rem;
+  }
+  
+  .type-buttons {
+    justify-content: center;
+  }
+  
+  .type-btn {
+    padding: 5px 10px;
+    font-size: 0.68rem;
+  }
+  
+  .info-row {
+    flex-direction: column;
+  }
+  
+  .info-box {
+    min-width: 100%;
+    font-size: 0.65rem;
+  }
+  
+  .result-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+  }
+  
+  .result-item {
+    padding: 10px 6px;
+  }
+  
+  .result-item .val {
+    font-size: 1rem;
+  }
+  
+  .result-item .lbl {
+    font-size: 0.55rem;
+  }
+  
+  .grade-letter {
+    font-size: 2.2rem;
+  }
+  
+  .detail-block {
+    font-size: 0.68rem;
+    line-height: 1.8;
+    padding: 10px 12px;
+  }
+  
+  .status-badge {
+    padding: 5px 12px;
+    font-size: 0.7rem;
+  }
+  
+  .denied-title {
+    font-size: 1rem;
+  }
+}
+ 
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+  
+  h1 {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+  
+  .header {
+    margin-bottom: 16px;
+  }
+  
+  .grade-table {
+    min-width: 100%;
+    font-size: 0.58rem;
+  }
+  
+  .grade-table th, .grade-table td {
+    padding: 4px 1px;
+  }
+  
+  .week-input {
+    width: 32px;
+    padding: 2px 1px;
+    font-size: 0.6rem;
+  }
+  
+  .rk-input {
+    width: 45px;
+    padding: 3px;
+    font-size: 0.6rem;
+  }
+  
+  .discipline-label {
+    min-width: 85px;
+    font-size: 0.65rem;
+    padding-left: 8px !important;
+  }
+  
+  .discipline-label .dot {
+    width: 6px;
+    height: 6px;
+    margin-right: 4px;
+  }
+  
+  .btn-calc {
+    max-width: 100%;
+    padding: 10px;
+    font-size: 0.7rem;
+    margin: 0 auto 15px;
+  }
+  
+  .type-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .type-btn {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 0.65rem;
+  }
+  
+  .np-toggle {
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 12px;
+    font-size: 0.75rem;
+  }
+  
+  .table-wrapper {
+    margin: 0 auto 15px;
+    border-radius: 12px;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+  }
+  
+  .info-box {
+    min-width: 100%;
+    padding: 8px 10px;
+    font-size: 0.62rem;
+    line-height: 1.5;
+  }
+  
+  .result-card {
+    padding: 16px;
+    margin: 15px auto 0;
+  }
+  
+  .result-grid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+  
+  .result-item {
+    padding: 8px 5px;
+    border-radius: 8px;
+  }
+  
+  .result-item .val {
+    font-size: 0.9rem;
+  }
+  
+  .result-item .lbl {
+    font-size: 0.52rem;
+    margin-top: 1px;
+  }
+  
+  .grade-letter {
+    font-size: 2rem;
+  }
+  
+  .final-grade-big {
+    margin-top: 12px;
+  }
+  
+  .detail-block {
+    font-size: 0.63rem;
+    line-height: 1.7;
+    padding: 10px;
+    margin-top: 12px;
+  }
+  
+  .status-badge {
+    padding: 4px 10px;
+    font-size: 0.65rem;
+    margin-top: 10px;
+  }
+  
+  .denied-block {
+    padding: 12px;
+    margin-top: 10px;
+  }
+  
+  .denied-title {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+  }
+  
+  #deniedReason {
+    font-size: 0.75rem;
+  }
+  
+  .validation-error-block {
+    padding: 12px;
+    margin-top: 10px;
+  }
+  
+  .validation-error-title {
+    font-size: 0.9rem;
+  }
+  
+  .validation-error-text {
+    font-size: 0.75rem;
+  }
+}
+ 
+/* Оптимизация для очень маленьких экранов (телефоны в портретном режиме) */
+@media (max-width: 360px) {
+  .grade-table {
+    font-size: 0.55rem;
+  }
+  
+  .week-input {
+    width: 30px;
+    font-size: 0.55rem;
+  }
+  
+  .rk-input {
+    width: 42px;
+    font-size: 0.55rem;
+  }
+  
+  .discipline-label {
+    min-width: 75px;
+    font-size: 0.6rem;
+  }
+  
+  .result-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grade-letter {
+    font-size: 1.8rem;
+  }
+}
+.history-section {
+  background: linear-gradient(135deg, #0f1f3d, #111827);
+  border: 1px solid #1e3a5f;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 20px auto 0;
+  display: none;
+}
+ 
+.history-section.show {
+  display: block;
+}
+ 
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+ 
+.history-header h2 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.1rem;
+  color: #06b6d4;
+  margin: 0;
+}
+ 
+.history-controls {
+  display: flex;
+  gap: 8px;
+}
+ 
+.history-btn {
+  padding: 6px 12px;
+  background: rgba(59,130,246,0.15);
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  color: #93c5fd;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: 'Onest', sans-serif;
+  transition: all 0.2s;
+}
+ 
+.history-btn:hover {
+  background: rgba(59,130,246,0.25);
+  box-shadow: 0 0 8px rgba(59,130,246,0.3);
+}
+ 
+.history-btn.danger {
+  background: rgba(239,68,68,0.15);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+ 
+.history-btn.danger:hover {
+  background: rgba(239,68,68,0.25);
+}
+ 
+.history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+ 
+.history-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+ 
+.history-item:hover {
+  border-color: #3b82f6;
+  background: #1a2844;
+  box-shadow: 0 0 12px rgba(59,130,246,0.2);
+}
+ 
+.history-item.active {
+  border-color: #06b6d4;
+  background: #0d2a36;
+  box-shadow: 0 0 12px rgba(6,182,212,0.3);
+}
+ 
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+ 
+.history-item-time {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+ 
+.history-item-delete {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+ 
+.history-item-delete:hover {
+  background: rgba(239,68,68,0.15);
+}
+ 
+.history-item-grade {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #60a5fa;
+  margin: 8px 0;
+}
+ 
+.history-item-details {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+ 
+.history-item-details span {
+  display: flex;
+  justify-content: space-between;
+}
+ 
+.history-item-details .label {
+  color: #64748b;
+}
+ 
+.history-item-details .value {
+  color: #60a5fa;
+  font-weight: 600;
+}
+ 
+.history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+ 
+.history-comparison {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(59,130,246,0.05);
+  border-left: 3px solid #3b82f6;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+ 
+.comparison-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+ 
+.comparison-label {
+  color: #64748b;
+}
+ 
+.comparison-value {
+  color: #60a5fa;
+  font-weight: 600;
+}
+ 
+@media (max-width: 768px) {
+  .history-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    max-height: 500px;
+  }
+  
+  .history-item-grade {
+    font-size: 1.4rem;
+  }
+  
+  .history-section {
+    padding: 16px;
+  }
+}
+ 
+@media (max-width: 480px) {
+  .history-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .history-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .history-header h2 {
+    font-size: 1rem;
+  }
+  
+  .history-controls {
+    width: 100%;
+  }
+  
+  .history-btn {
+    flex: 1;
+  }
+}
 </style>
 </head>
 <body>
@@ -390,6 +974,24 @@
     <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
     <div class="info-box"><strong style="color:#10b981;">🏆 Автомат:</strong> нет ни одной НЯ → РД ставится в поле экзамена автоматически</div>
   </div>
+
+<div class="history-section show" id="historySection">
+    <div class="history-header">
+    <h2>📊 История расчётов</h2>
+    <div class="history-controls">
+      <button class="history-btn" onclick="toggleHistory()">Показать</button>
+      <button class="history-btn danger" onclick="clearHistory()">Очистить</button>
+    </div>
+  </div>
+  <div class="history-list" id="historyList"></div>
+  <div class="history-empty" id="historyEmpty" style="display: none;">
+    Нет сохранённых расчётов. Сделайте первый расчёт чтобы начать историю 📝
+  </div>
+  <div class="history-comparison" id="historyComparison" style="display: none;">
+    <div style="font-weight: 600; margin-bottom: 8px; color: #93c5fd;">Сравнение с предыдущим:</div>
+    <div id="comparisonContent"></div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -506,7 +1108,171 @@ function makeInput(id, isRk=false) {
   inp.onblur  =()=>handleBlur(inp);
   return inp;
 }
-
+// ===== ИСТОРИЯ РАСЧЁТОВ =====
+let calcHistory = [];
+let historyVisible = false;
+let selectedHistoryIndex = null;
+ 
+function saveToHistory(data) {
+  const timestamp = new Date();
+  const historyEntry = {
+    id: Date.now(),
+    time: timestamp.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+    date: timestamp.toLocaleDateString('ru-RU'),
+    rk1: data.rk1,
+    rk2: data.rk2,
+    rd: data.rd,
+    exam: data.exam,
+    io: data.io,
+    grade: data.grade,
+    isAvtomat: data.isAvtomat,
+    dopusk: data.dopusk,
+  };
+  
+  calcHistory.unshift(historyEntry); // добавляем в начало
+  if (calcHistory.length > 20) calcHistory.pop(); // максимум 20 записей
+  
+  updateHistoryUI();
+  saveToLocalStorage();
+}
+ 
+function updateHistoryUI() {
+  const historyList = document.getElementById('historyList');
+  const historyEmpty = document.getElementById('historyEmpty');
+  
+  if (calcHistory.length === 0) {
+    historyList.innerHTML = '';
+    historyEmpty.style.display = 'block';
+    return;
+  }
+  
+  historyEmpty.style.display = 'none';
+  historyList.innerHTML = calcHistory.map((entry, idx) => `
+    <div class="history-item ${selectedHistoryIndex === idx ? 'active' : ''}" onclick="selectHistoryItem(${idx})">
+      <div class="history-item-header">
+        <div>
+          <div class="history-item-time">${entry.date}</div>
+          <div class="history-item-time">${entry.time}</div>
+        </div>
+        <button class="history-item-delete" onclick="deleteHistoryItem(event, ${idx})">✕</button>
+      </div>
+      <div class="history-item-grade" style="color: ${entry.isAvtomat ? '#34d399' : '#60a5fa'}">${entry.grade}</div>
+      <div class="history-item-details">
+        <span><span class="label">РК1:</span><span class="value">${entry.rk1 !== null ? entry.rk1.toFixed(2) : '—'}</span></span>
+        <span><span class="label">РК2:</span><span class="value">${entry.rk2 !== null ? entry.rk2.toFixed(2) : '—'}</span></span>
+        <span><span class="label">РД:</span><span class="value">${entry.rd !== null ? entry.rd.toFixed(2) : '—'}</span></span>
+        <span><span class="label">Экзамен:</span><span class="value">${entry.exam !== null ? entry.exam.toFixed(2) : '—'}${entry.isAvtomat ? ' 🏆' : ''}</span></span>
+        <span><span class="label">ИО:</span><span class="value">${entry.io !== null ? entry.io.toFixed(2) : '—'}</span></span>
+      </div>
+    </div>
+  `).join('');
+}
+ 
+function selectHistoryItem(idx) {
+  selectedHistoryIndex = idx;
+  updateHistoryUI();
+  showComparison(idx);
+}
+ 
+function deleteHistoryItem(event, idx) {
+  event.stopPropagation();
+  calcHistory.splice(idx, 1);
+  selectedHistoryIndex = null;
+  updateHistoryUI();
+  document.getElementById('historyComparison').style.display = 'none';
+  saveToLocalStorage();
+}
+ 
+function toggleHistory() {
+  const section = document.getElementById('historySection');
+  const buttons = document.querySelectorAll('.history-btn');
+  const btn = buttons[0]; // берём первую кнопку (Показать/Скрыть)
+  
+  historyVisible = !historyVisible;
+  
+  if (historyVisible) {
+    section.classList.add('show');
+    btn.textContent = 'Скрыть';
+  } else {
+    section.classList.remove('show');
+    btn.textContent = 'Показать';
+  }
+}
+ 
+function clearHistory() {
+  if (confirm('Удалить всю историю расчётов? Это действие не можно отменить.')) {
+    calcHistory = [];
+    selectedHistoryIndex = null;
+    historyVisible = false;
+    updateHistoryUI();
+    document.getElementById('historySection').classList.remove('show');
+    document.getElementById('historyComparison').style.display = 'none';
+    saveToLocalStorage();
+  }
+}
+ 
+function showComparison(idx) {
+  if (idx === 0 || calcHistory.length < 2) {
+    document.getElementById('historyComparison').style.display = 'none';
+    return;
+  }
+  
+  const current = calcHistory[idx];
+  const previous = calcHistory[idx - 1];
+  const comparison = document.getElementById('historyComparison');
+  const content = document.getElementById('comparisonContent');
+  
+  const formatDiff = (curr, prev) => {
+    if (curr === null || prev === null) return '—';
+    const diff = curr - prev;
+    const sign = diff > 0 ? '+' : '';
+    return `${sign}${diff.toFixed(2)}`;
+  };
+  
+  content.innerHTML = `
+    <div class="comparison-row">
+      <span class="comparison-label">РК1:</span>
+      <span class="comparison-value">${formatDiff(current.rk1, previous.rk1)}</span>
+    </div>
+    <div class="comparison-row">
+      <span class="comparison-label">РК2:</span>
+      <span class="comparison-value">${formatDiff(current.rk2, previous.rk2)}</span>
+    </div>
+    <div class="comparison-row">
+      <span class="comparison-label">РД:</span>
+      <span class="comparison-value">${formatDiff(current.rd, previous.rd)}</span>
+    </div>
+    <div class="comparison-row">
+      <span class="comparison-label">ИО:</span>
+      <span class="comparison-value">${formatDiff(current.io, previous.io)}</span>
+    </div>
+  `;
+  
+  comparison.style.display = 'block';
+}
+ 
+function saveToLocalStorage() {
+  localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
+}
+ 
+function loadFromLocalStorage() {
+  const saved = localStorage.getItem('calcHistory');
+  if (saved) {
+    try {
+      calcHistory = JSON.parse(saved);
+      updateHistoryUI();
+    } catch (e) {
+      console.error('Ошибка при загрузке истории:', e);
+    }
+  }
+}
+ 
+// Загрузить историю при загрузке страницы
+loadFromLocalStorage();
+// Показываем историю по дефолту
+document.getElementById('historySection').classList.add('show');
+document.querySelector('.history-btn').textContent = 'Скрыть';
+historyVisible = true;
 function buildTable() {
   const tbody=document.getElementById('tableBody');
   tbody.innerHTML='';
@@ -620,6 +1386,8 @@ function buildTable() {
 }
 
 function setAllNp(isNp){
+  const wr=document.getElementById('examWrapper');
+  if(wr) wr.classList.remove('is-avtomat');
   for(const type of ['lek','prak','lab','srsp']){
     for(let w=1;w<=15;w++){
       const el=document.getElementById(`${type}-w${w}`);
@@ -775,7 +1543,56 @@ function calculate(){
     if(a2<50){ dopusk=false; reasons.push(`(РК1+РК2)/2 = ${a2.toFixed(2)} < 50`); }
     if(rd<50){ dopusk=false; reasons.push(`РД = ${rd.toFixed(2)} < 50`); }
   }
+  // Step 7: Автомат — нет ни одной НЯ/0 среди введённых оценок
+let hasNya=false;
+outer: for(const type of ['lek','prak','lab','srsp']){
+  if(!types[type]) continue;
+  for(let w=1;w<=15;w++){
+    const el=document.getElementById(`${type}-w${w}`);
+    if(!el) continue;
+    const raw=el.value.trim().toUpperCase();
+    if(raw==='НП'||raw==='') continue;
+    if(parseVal(el.value)===0){ hasNya=true; break outer; }
+  }
+}
+if(!hasNya){
+  for(const id of ['rk1','rk2']){
+    const el=document.getElementById(id);
+    if(!el) continue;
+    const raw=el.value.trim().toUpperCase();
+    if(raw==='НП'||raw==='') continue;
+    if(parseVal(el.value)===0){ hasNya=true; break; }
+  }
+}
 
+const examEl=document.getElementById('exam');
+const examWrapper=document.getElementById('examWrapper');
+const wasAvtomat=examEl.classList.contains('avtomat');
+const examRaw=examEl.value.trim().toUpperCase();
+const examManual = examRaw!=='' && examRaw!=='НП' && !wasAvtomat;
+
+// Автомат срабатывает: допущен + нет НЯ + нет ручного ввода + есть РД
+const isAvtomat = dopusk!==false && !hasNya && !examManual && rd!==null;
+
+// Применяем автомат к полю экзамена
+if(isAvtomat){
+  examEl.value=rd.toFixed(2);
+  examEl.classList.remove('np','nya');
+  examEl.classList.add('avtomat');
+  if(examWrapper) examWrapper.classList.add('is-avtomat');
+} else if(!examManual){
+  // Не автомат и не введён вручную — сбросить если был авт.
+  if(wasAvtomat){
+    examEl.value='НП';
+    examEl.classList.remove('avtomat');
+    updateStyle(examEl,true);
+  }
+  if(examWrapper) examWrapper.classList.remove('is-avtomat');
+}
+
+const examForCalc=parseVal(examEl.value);
+
+<<<<<<< HEAD
   // Step 7: Автомат — нет ни одной НЯ/0 среди введённых оценок
   let hasNya=false;
   outer: for(const type of ['lek','prak','lab','srsp']){
@@ -827,6 +1644,10 @@ function calculate(){
   const examForCalc=parseVal(examEl.value);
 
   // Step 8: ИО
+=======
+  // --- Step 7: ИО ---
+  // const exam=parseVal(document.getElementById('exam')?.value);
+>>>>>>> 33496d2d15f997295b3295bcd7d66b4013de9c36
   let io=null;
   if(dopusk===false) io=0;
   else if(rd!==null&&examForCalc!==null) io=round2(0.6*rd+0.4*examForCalc);
@@ -849,10 +1670,14 @@ function calculate(){
     <div class="result-item"><span class="val">${rk2!==null?rk2.toFixed(2):'—'}</span><span class="lbl">РК2</span></div>
     <div class="result-item"><span class="val" style="${cv(p2,50)}">${p2!==null?p2.toFixed(2):'—'}</span><span class="lbl">Р2</span></div>
     <div class="result-item"><span class="val" style="${cv(rd,50)}">${rd!==null?rd.toFixed(2):'—'}</span><span class="lbl">РД</span></div>
+<<<<<<< HEAD
     <div class="result-item ${isAvtomat?'highlight-avtomat':''}">
       <span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?examForCalc.toFixed(2):'—'}</span>
       <span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span>
     </div>
+=======
+    <div class="result-item ${isAvtomat?'highlight-avtomat':''}"><span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?examForCalc.toFixed(2):'—'}</span><span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span></div>
+>>>>>>> 33496d2d15f997295b3295bcd7d66b4013de9c36
     <div class="result-item"><span class="val" style="${cv(io,50)}">${io!==null?io.toFixed(2):'—'}</span><span class="lbl">ИО</span></div>
     <div class="result-item"><span class="val" style="color:#60a5fa">${finalGrade}</span><span class="lbl">Буквенная</span></div>
   `;
@@ -862,6 +1687,9 @@ function calculate(){
   const deniedBlock=document.getElementById('deniedBlock');
   if(dopusk===null){
     statusDiv.innerHTML=`<span class="status-badge" style="background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid #334155;">❓ Недостаточно данных</span>`;
+    deniedBlock.style.display='none';
+  } else if(dopusk&&isAvtomat){
+    statusDiv.innerHTML=`<span class="status-badge avtomat">🏆 АВТОМАТ — экзамен не нужен!</span>`;
     deniedBlock.style.display='none';
   } else if(dopusk&&isAvtomat){
     statusDiv.innerHTML=`<span class="status-badge avtomat">🏆 АВТОМАТ — экзамен не нужен!</span>`;
@@ -883,23 +1711,50 @@ function calculate(){
     <span style="color:#60a5fa">Р2</span> = 0.7 × ${tkObsh2!==null?tkObsh2.toFixed(2):'—'} + 0.3 × ${rk2!==null?rk2.toFixed(2):'—'} = <strong>${p2!==null?p2.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">РД</span> = (${p1!==null?p1.toFixed(2):'—'} + ${p2!==null?p2.toFixed(2):'—'}) / 2 = <strong>${rd!==null?rd.toFixed(2):'—'}</strong><br>
     ${isAvtomat
+<<<<<<< HEAD
       ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?rd.toFixed(2):'—'} → ИО = 0.6 × ${rd.toFixed(2)} + 0.4 × ${rd.toFixed(2)} = <strong>${io!==null?io.toFixed(2):'—'}</strong>`
       : io!==null&&dopusk!==false
         ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?rd.toFixed(2):'—'} + 0.4 × ${examForCalc!==null?examForCalc.toFixed(2):'—'} = <strong>${io.toFixed(2)}</strong>`
         : dopusk===false?'<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>':''
     }
+=======
+  ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?rd.toFixed(2):'—'} → ИО = 0.6 × ${rd.toFixed(2)} + 0.4 × ${rd.toFixed(2)} = <strong>${io!==null?io.toFixed(2):'—'}</strong>`
+  : io!==null&&dopusk!==false
+    ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?rd.toFixed(2):'—'} + 0.4 × ${examForCalc!==null?examForCalc.toFixed(2):'—'} = <strong>${io.toFixed(2)}</strong>`
+    : dopusk===false?'<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>':''
+}
+>>>>>>> 33496d2d15f997295b3295bcd7d66b4013de9c36
   `;
 
   const fgBlock=document.getElementById('finalGradeBlock');
   if(io!==null||dopusk===false){
     fgBlock.style.display='block';
+<<<<<<< HEAD
     const dg=dopusk===false?'F':getLetter(io);
     fgBlock.innerHTML=`
       <div class="grade-letter ${isAvtomat?'avtomat-grade':''}">${dg}</div>
       <div style="color:#64748b;font-size:0.75rem;margin-top:4px;">${dopusk===false?'НЕДОПУСК':isAvtomat?'🏆 Автомат — итоговая оценка':'Итоговая оценка'}</div>
     `;
   } else fgBlock.style.display='none';
+=======
+    const displayGrade = dopusk===false ? 'F' : getLetter(io);
+fgBlock.innerHTML=`
+  <div class="grade-letter ${isAvtomat?'avtomat-grade':''}">${displayGrade}</div>
+  <div style="color:#64748b;font-size:0.75rem;margin-top:4px;">${dopusk===false?'НЕДОПУСК':isAvtomat?'🏆 Автомат — итоговая оценка':'Итоговая оценка'}</div>
+`;  } else fgBlock.style.display='none';
+>>>>>>> 33496d2d15f997295b3295bcd7d66b4013de9c36
 
+// Сохраняем в историю
+saveToHistory({
+  rk1: rk1,
+  rk2: rk2,
+  rd: rd,
+  exam: examForCalc,
+  io: io,
+  grade: finalGrade,
+  isAvtomat: isAvtomat,
+  dopusk: dopusk,
+});
   document.getElementById('resultCard').style.display='block';
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
 }

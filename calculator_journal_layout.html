@@ -101,6 +101,32 @@
     font-size: 0.72rem;
     font-family: 'Onest', sans-serif;
   }
+  .error {
+  border: 1px solid #ef4444 !important;
+  background: #2a1414 !important;
+}
+.validation-error-block {
+  background: rgba(239,68,68,0.10);
+  border: 2px solid #ef4444;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 14px;
+  text-align: center;
+}
+
+.validation-error-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.validation-error-text {
+  color: #fca5a5;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
   .rk-input:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(37,99,235,0.25); }
   .rk-input.np { color: #475569; }
   .rk-input.nya { color: #e879f9; }
@@ -319,6 +345,10 @@
       <div class="denied-title">🚫 НЕ ДОПУЩЕН К ЭКЗАМЕНУ</div>
       <div id="deniedReason" style="color:#fca5a5;font-size:0.8rem;"></div>
     </div>
+  <div id="validationErrorBlock" style="display:none;" class="validation-error-block">
+  <div class="validation-error-title">Недопустимые значения</div>
+  <div id="validationErrorText" class="validation-error-text"></div>
+</div>
     <div class="detail-block" id="detailBlock"></div>
     <div class="final-grade-big" id="finalGradeBlock" style="display:none;"></div>
   </div>
@@ -381,11 +411,37 @@ function updateStyle(el, isRk=false) {
 function handleFocus(el){ if(el.value.trim().toUpperCase()==='НП') el.select(); }
 function handleBlur(el){
   let v = el.value.trim();
-  if(v==='') { el.value='НП'; updateStyle(el); return; }
-  const u=v.toUpperCase();
-  if(u==='НП'||u==='НЯ'){ el.value=u; updateStyle(el); return; }
-  const n=parseFloat(v.replace(',','.'));
-  if(!isNaN(n)&&n>=0&&n<=100) el.value=n.toString();
+
+  if(v==='') { 
+    el.value='НП'; 
+    updateStyle(el); 
+    return; 
+  }
+
+  const u = v.toUpperCase();
+
+  if(u==='НП' || u==='НЯ'){ 
+    el.value = u; 
+    updateStyle(el); 
+    return; 
+  }
+
+  const n = parseFloat(v.replace(',','.'));
+
+  if (!isNaN(n)) {
+
+    // ❌ проверка на допустимый диапазон
+    if (n > 100 || n < 0) {
+      alert('Недопустимое значение');
+      el.classList.add('error');
+      return;
+    }
+
+    // ✅ если всё ок
+    el.classList.remove('error');
+    el.value = n.toString();
+  }
+
   updateStyle(el);
 }
 
@@ -541,7 +597,65 @@ function getLetter(s){
   if(s>=50)return'D−'; if(s>=25)return'FX'; return'F';
 }
 
+function validateAllInputs() {
+  const invalidFields = [];
+
+  const allInputs = document.querySelectorAll('input[type="text"]');
+
+  allInputs.forEach(el => {
+    const raw = el.value.trim();
+
+    if (raw === '' || raw.toUpperCase() === 'НП' || raw.toUpperCase() === 'НЯ') {
+      el.classList.remove('error');
+      return;
+    }
+
+    const num = parseFloat(raw.replace(',', '.'));
+
+    if (isNaN(num) || num < 0 || num > 100) {
+      el.classList.add('error');
+
+      let fieldName = el.id;
+
+      if (el.id.startsWith('lek-w')) fieldName = `Лекция, неделя ${el.id.replace('lek-w','')}`;
+      else if (el.id.startsWith('prak-w')) fieldName = `Практика, неделя ${el.id.replace('prak-w','')}`;
+      else if (el.id.startsWith('lab-w')) fieldName = `Лаборатория, неделя ${el.id.replace('lab-w','')}`;
+      else if (el.id.startsWith('srsp-w')) fieldName = `СРСП, неделя ${el.id.replace('srsp-w','')}`;
+      else if (el.id === 'rk1') fieldName = 'РК1';
+      else if (el.id === 'rk2') fieldName = 'РК2';
+      else if (el.id === 'exam') fieldName = 'Экзамен';
+
+      invalidFields.push(`${fieldName}: ${raw}`);
+    } else {
+      el.classList.remove('error');
+    }
+  });
+
+  return invalidFields;
+}
 function calculate(){
+  const detailBlock = document.getElementById('detailBlock');
+  const finalGradeBlock = document.getElementById('finalGradeBlock');
+  const resultGrid = document.getElementById('resultGrid');
+  const validationErrorBlock = document.getElementById('validationErrorBlock');
+  const validationErrorText = document.getElementById('validationErrorText');
+
+  const invalidFields = validateAllInputs();
+
+  if (invalidFields.length > 0) {
+    resultGrid.innerHTML = '';
+    statusDiv.innerHTML = `<span class="status-badge denied">✗ Расчёт невозможен</span>`;
+    deniedBlock.style.display = 'none';
+    validationErrorBlock.style.display = 'block';
+    validationErrorText.innerHTML = invalidFields.join(' · ');
+    detailBlock.innerHTML = 'Исправьте недопустимые значения и повторите расчёт.';
+    finalGradeBlock.style.display = 'none';
+    document.getElementById('resultCard').style.display = 'block';
+    document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+    return;
+  } else {
+    validationErrorBlock.style.display = 'none';
+  }
   // --- Step 1: per-discipline TK1, TK2 ---
   const tk = {};
   for(const type of ['lek','prak','lab','srsp']){

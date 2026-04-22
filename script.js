@@ -631,7 +631,7 @@ const examForCalc=parseVal(examEl.value);
   // --- Results panel ---
   const grid=document.getElementById('resultGrid');
   const cv=(v,good)=>v!==null?`color:${v>=good?'#34d399':'#f87171'}`:'';
-  grid.innerHTML=`
+    grid.innerHTML=`
     <div class="result-item"><span class="val">${tkObsh1!==null?tkObsh1.toFixed(2):'—'}</span><span class="lbl">ТКобщ1</span></div>
     <div class="result-item"><span class="val">${rk1!==null?rk1.toFixed(2):'—'}</span><span class="lbl">РК1</span></div>
     <div class="result-item"><span class="val" style="${cv(p1,50)}">${p1!==null?p1.toFixed(2):'—'}</span><span class="lbl">Р1</span></div>
@@ -640,27 +640,57 @@ const examForCalc=parseVal(examEl.value);
     <div class="result-item"><span class="val" style="${cv(p2,50)}">${p2!==null?p2.toFixed(2):'—'}</span><span class="lbl">Р2</span></div>
     <div class="result-item"><span class="val" style="${cv(rd,50)}">${rd!==null?Math.round(rd).toString():'—'}</span><span class="lbl">РД</span></div>
     <div class="result-item ${isAvtomat?'highlight-avtomat':''}"><span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?Math.round(examForCalc).toString():'—'}</span><span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span></div>
-    <span><span class="label">РД:</span><span class="value">${entry.rd !== null ? Math.round(entry.rd).toString() : '—'}</span></span>
-<span><span class="label">Экзамен:</span><span class="value">${entry.exam !== null ? Math.round(entry.exam).toString() : '—'}${entry.isAvtomat ? ' 🏆' : ''}</span></span>
-<span><span class="label">ИО:</span><span class="value">${entry.io !== null ? Math.round(entry.io).toString() : '—'}</span></span>
     <div class="result-item"><span class="val" style="color:#60a5fa">${finalGrade}</span><span class="lbl">Буквенная</span></div>
   `;
 
-  const statusDiv=document.getElementById('statusBadge');
-  const deniedBlock=document.getElementById('deniedBlock');
-  if(dopusk===null){
-    statusDiv.innerHTML=`<span class="status-badge" style="background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid #334155;">❓ Недостаточно данных для проверки допуска</span>`;
-    deniedBlock.style.display='none';
-  } else if(dopusk&&isAvtomat){
-    statusDiv.innerHTML=`<span class="status-badge avtomat">🏆 АВТОМАТ — экзамен не нужен!</span>`;
-    deniedBlock.style.display='none';
-  } else if(dopusk){
-    statusDiv.innerHTML=`<span class="status-badge allowed">✓ Допущен к экзамену</span>`;
-    deniedBlock.style.display='none';
-  } else {
-    statusDiv.innerHTML=`<span class="status-badge denied">✗ Не допущен к экзамену</span>`;
-    deniedBlock.style.display='block';
-    document.getElementById('deniedReason').textContent=reasons.join(' · ');
+  // Удаляем старые блоки статуса, если они есть
+  const oldStatusDiv = document.getElementById('statusBadge');
+  const oldDeniedBlock = document.getElementById('deniedBlock');
+  if (oldStatusDiv) oldStatusDiv.style.display = 'none';
+  if (oldDeniedBlock) oldDeniedBlock.style.display = 'none';
+
+  // Находим или создаём контейнер для баннера
+  let banner = document.getElementById('resultBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'resultBanner';
+    banner.className = 'result-banner';
+    // Вставляем после resultGrid
+    const resultGrid = document.getElementById('resultGrid');
+    resultGrid.parentNode.insertBefore(banner, resultGrid.nextSibling);
+  }
+
+  // Определяем текст и класс баннера
+  let bannerText = '';
+  let bannerClass = '';
+
+  // Проверка допуска
+  const isDenied = (dopusk === false);
+  
+  if (isDenied) {
+    bannerText = '🚫 НЕ ДОПУЩЕН К ЭКЗАМЕНУ';
+    bannerClass = 'denied';
+  } else if (dopusk === true && io !== null) {
+    // io - итоговая оценка (ИО)
+    if (io >= 90) {
+      bannerText = 'Повышка 🤑💸💵💰';
+      bannerClass = 'success90';
+    } else if (io >= 70) {
+      bannerText = 'Степак 🫡👏👍✊';
+      bannerClass = 'success70';
+    } else {
+      // Если допущен, но ИО меньше 70 - баннер не показываем (или можно пустой)
+      banner.style.display = 'none';
+      bannerText = '';
+    }
+  }
+
+  if (bannerText) {
+    banner.textContent = bannerText;
+    banner.className = `result-banner ${bannerClass}`;
+    banner.style.display = 'block';
+  } else if (!isDenied) {
+    banner.style.display = 'none';
   }
 
   const det=document.getElementById('detailBlock');

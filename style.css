@@ -854,3 +854,75 @@
     flex: 1;
   }
 }
+
+/* Большой баннер уведомлений */
+.result-banner {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-top: 20px;
+  text-align: center;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 2px solid;
+  transition: all 0.3s;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+}
+
+.result-banner.denied {
+  background: linear-gradient(135deg, #7f1a1a, #991b1b);
+  border-color: #ef4444;
+  color: #fecaca;
+  text-shadow: 0 0 5px rgba(239,68,68,0.5);
+}
+
+.result-banner.success70 {
+  background: linear-gradient(135deg, #1e3a5f, #0f2b45);
+  border-color: #fbbf24;
+  color: #fde68a;
+}
+
+.result-banner.success90 {
+  background: linear-gradient(135deg, #064e3b, #065f46);
+  border-color: #34d399;
+  color: #a7f3d0;
+}
+
+@media (max-width: 640px) {
+  .result-banner {
+    font-size: 1rem;
+    padding: 14px 16px;
+  }
+}
+
+.result-banner {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-top: 20px;
+  text-align: center;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  border: 2px solid;
+}
+.result-banner.denied {
+  background: linear-gradient(135deg, #7f1a1a, #991b1b);
+  border-color: #ef4444;
+  color: #fecaca;
+}
+.result-banner.success70 {
+  background: linear-gradient(135deg, #1e3a5f, #0f2b45);
+  border-color: #fbbf24;
+  color: #fde68a;
+}
+.result-banner.success90 {
+  background: linear-gradient(135deg, #064e3b, #065f46);
+  border-color: #34d399;
+  color: #a7f3d0;
+}
+@media (max-width: 640px) {
+  .result-banner { font-size: 1rem; padding: 14px 16px; }
+}

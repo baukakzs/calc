@@ -7,23 +7,40 @@ function getCoef(type) {
   const l = types.lek, p = types.prak, b = types.lab, s = types.srsp;
   const active = [l&&'lek', p&&'prak', b&&'lab', s&&'srsp'].filter(Boolean);
   if(!active.includes(type)) return 0;
-  // Presets
-  if(l&&p&&b&&s) return {lek:0.2,prak:0.3,lab:0.3,srsp:0.2}[type];
-  if(l&&p&&b&&!s) return {lek:0.25,prak:0.4,lab:0.35}[type]||0;
-  if(l&&p&&!b&&s) return {lek:0.25,prak:0.5,lab:0,srsp:0.25}[type]||0;
-  if(l&&!p&&b&&s) return {lek:0.25,prak:0,lab:0.5,srsp:0.25}[type]||0;
-  if(!l&&p&&b&&s) return {lek:0,prak:0.4,lab:0.4,srsp:0.2}[type]||0;
-  if(l&&p&&!b&&!s) return {lek:0.35,prak:0.65}[type]||0;
-  if(l&&!p&&b&&!s) return {lek:0.4,lab:0.6}[type]||0;
-  if(!l&&p&&b&&!s) return {prak:0.5,lab:0.5}[type]||0;
-  if(l&&!p&&!b&&s) return {lek:0.5,srsp:0.5}[type]||0;
-  if(!l&&p&&!b&&s) return {prak:0.8,srsp:0.2}[type]||0;
-  if(!l&&!p&&b&&s) return {lab:0.8,srsp:0.2}[type]||0;
-  if(l&&!p&&!b&&!s) return type==='lek'?1:0;
-  if(!l&&p&&!b&&!s) return type==='prak'?1:0;
-  if(!l&&!p&&b&&!s) return type==='lab'?1:0;
-  if(!l&&!p&&!b&&s) return type==='srsp'?1:0;
-  return 0;
+
+  // Определяем комбинацию активных типов
+  const allFour = l && p && b && s;
+  const lps = l && p && !b && s;      // лекция+практика+срсп
+  const lbs = l && !p && b && s;      // лекция+лабка+срсп
+  const ps = !l && p && !b && s;      // практика+срсп
+  const ls = l && !p && !b && s;      // лекция+срсп
+
+  // Веса по таблице (К1 – К5)
+  if (allFour) {
+    // К1: лек 0.2 + прак 0.3 + лаб 0.3 + срсп 0.2 = 1.0
+    return { lek: 0.2, prak: 0.3, lab: 0.3, srsp: 0.2 }[type] ?? 0;
+  }
+  if (lps) {
+    // К2: лек 0.3 + прак 0.5 + срсп 0.2 = 1.0 (нет лабки)
+    return { lek: 0.3, prak: 0.5, lab: 0, srsp: 0.2 }[type] ?? 0;
+  }
+  if (lbs) {
+    // К3: лек 0.3 + лаб 0.5 + срсп 0.2 = 1.0 (нет прак)
+    return { lek: 0.3, prak: 0, lab: 0.5, srsp: 0.2 }[type] ?? 0;
+  }
+  if (ps) {
+    // К4: прак 0.9 + срсп 0.1 = 1.0 (нет лек, лаб)
+    return { lek: 0, prak: 0.9, lab: 0, srsp: 0.1 }[type] ?? 0;
+  }
+  if (ls) {
+    // К5: лек 0.5 + срсп 0.5 = 1.0 (нет лаб, прак)
+    return { lek: 0.5, prak: 0, lab: 0, srsp: 0.5 }[type] ?? 0;
+  }
+  // Если активен только один тип – вес 1
+  if(active.length === 1) return 1;
+
+  // Для остальных редких комбинаций (например, только практика+лаба) – равные веса
+  return 1 / active.length;
 }
 
 function parseVal(v) {

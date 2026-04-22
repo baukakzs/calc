@@ -554,7 +554,7 @@ function calculate(){
   else if(p1!==null) rd=p1;
   else if(p2!==null) rd=p2;
   const rdEl=document.getElementById('rd');
-  if(rdEl){ rdEl.textContent=rd!==null?rd.toFixed(2):'—'; rdEl.style.color=rd!==null&&rd>=50?'#34d399':'#f87171'; }
+  if(rdEl){ rdEl.textContent=rd!==null?Math.round(rd).toString():'—'; rdEl.style.color=rd!==null&&rd>=50?'#34d399':'#f87171'; }
 
   // --- Step 6: допуск ---
   let dopusk=null, reasons=[];
@@ -621,7 +621,7 @@ const examForCalc=parseVal(examEl.value);
   if(dopusk===false) io=0;
   else if(rd!==null&&examForCalc!==null) io=round2(0.6*rd+0.4*examForCalc);
   const ioEl=document.getElementById('io');
-  if(ioEl){ ioEl.textContent=io!==null?io.toFixed(2):'—'; ioEl.style.color=io!==null&&io>=50?'#34d399':'#f87171'; }
+  if(ioEl){ ioEl.textContent=io!==null?Math.round(io).toString():'—'; ioEl.style.color=io!==null&&io>=50?'#34d399':'#f87171'; }
 
   // --- Step 8: Letter grade ---
   const finalGrade = io!==null ? getLetter(io) : (dopusk===false?'F':'—');
@@ -638,9 +638,11 @@ const examForCalc=parseVal(examEl.value);
     <div class="result-item"><span class="val">${tkObsh2!==null?tkObsh2.toFixed(2):'—'}</span><span class="lbl">ТКобщ2</span></div>
     <div class="result-item"><span class="val">${rk2!==null?rk2.toFixed(2):'—'}</span><span class="lbl">РК2</span></div>
     <div class="result-item"><span class="val" style="${cv(p2,50)}">${p2!==null?p2.toFixed(2):'—'}</span><span class="lbl">Р2</span></div>
-    <div class="result-item"><span class="val" style="${cv(rd,50)}">${rd!==null?rd.toFixed(2):'—'}</span><span class="lbl">РД</span></div>
-    <div class="result-item ${isAvtomat?'highlight-avtomat':''}"><span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?examForCalc.toFixed(2):'—'}</span><span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span></div>
-    <div class="result-item"><span class="val" style="${cv(io,50)}">${io!==null?io.toFixed(2):'—'}</span><span class="lbl">ИО</span></div>
+    <div class="result-item"><span class="val" style="${cv(rd,50)}">${rd!==null?Math.round(rd).toString():'—'}</span><span class="lbl">РД</span></div>
+    <div class="result-item ${isAvtomat?'highlight-avtomat':''}"><span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?Math.round(examForCalc).toString():'—'}</span><span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span></div>
+    <span><span class="label">РД:</span><span class="value">${entry.rd !== null ? Math.round(entry.rd).toString() : '—'}</span></span>
+<span><span class="label">Экзамен:</span><span class="value">${entry.exam !== null ? Math.round(entry.exam).toString() : '—'}${entry.isAvtomat ? ' 🏆' : ''}</span></span>
+<span><span class="label">ИО:</span><span class="value">${entry.io !== null ? Math.round(entry.io).toString() : '—'}</span></span>
     <div class="result-item"><span class="val" style="color:#60a5fa">${finalGrade}</span><span class="lbl">Буквенная</span></div>
   `;
 
@@ -669,9 +671,9 @@ const examForCalc=parseVal(examEl.value);
     <span style="color:#60a5fa">Р2</span> = 0.7 × ${tkObsh2!==null?tkObsh2.toFixed(2):'—'} + 0.3 × ${rk2!==null?rk2.toFixed(2):'—'} = <strong>${p2!==null?p2.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">РД</span> = (${p1!==null?p1.toFixed(2):'—'} + ${p2!==null?p2.toFixed(2):'—'}) / 2 = <strong>${rd!==null?rd.toFixed(2):'—'}</strong><br>
     ${isAvtomat
-  ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?rd.toFixed(2):'—'} → ИО = 0.6 × ${rd.toFixed(2)} + 0.4 × ${rd.toFixed(2)} = <strong>${io!==null?io.toFixed(2):'—'}</strong>`
+  ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?Math.round(rd).toString():'—'} → ИО = 0.6 × ${Math.round(rd).toString()} + 0.4 × ${Math.round(rd).toString()} = <strong>${io!==null?(Math.round(io)).toFixed(2):'—'}</strong>`
   : io!==null&&dopusk!==false
-    ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?rd.toFixed(2):'—'} + 0.4 × ${examForCalc!==null?examForCalc.toFixed(2):'—'} = <strong>${io.toFixed(2)}</strong>`
+    ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?Math.round(rd).toString():'—'} + 0.4 × ${examForCalc!==null?(Math.round(examForCalc)).toFixed(2):'—'} = <strong>${(Math.round(io)).toFixed(2)}</strong>`
     : dopusk===false?'<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>':''
 }
   `;

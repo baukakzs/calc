@@ -389,20 +389,6 @@ function buildTable() {
   });
 }
 
-function setAllNp(isNp){
-  const wr=document.getElementById('examWrapper');
-  if(wr) wr.classList.remove('is-avtomat');
-  for(const type of ['lek','prak','lab','srsp']){
-    for(let w=1;w<=15;w++){
-      const el=document.getElementById(`${type}-w${w}`);
-      if(el){ el.value=isNp?'НП':''; updateStyle(el); if(!isNp) handleBlur(el); }
-    }
-  }
-  ['rk1','rk2','exam'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){ el.value=isNp?'НП':''; updateStyle(el,true); }
-  });
-}
 function resetAllGrades(){
   if(!confirm('Сбросить все оценки? (Все значения станут НП)')) return;
   

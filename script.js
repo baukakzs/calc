@@ -543,6 +543,8 @@ function calculate(){
   const resultGrid = document.getElementById('resultGrid');
   const validationErrorBlock = document.getElementById('validationErrorBlock');
   const validationErrorText = document.getElementById('validationErrorText');
+  const statusDiv = document.getElementById('statusBadge');
+const deniedBlock = document.getElementById('deniedBlock');
 
   const invalidFields = validateAllInputs();
 

@@ -531,6 +531,19 @@ function validateAllInputs() {
 
   return invalidFields;
 }
+function fixFinalCellsBackground() {
+  const rd = document.getElementById('rd');
+  const io = document.getElementById('io');
+  const grade = document.getElementById('grade');
+  const examWrapper = document.querySelector('#examWrapper');
+  const examTd = examWrapper ? examWrapper.parentElement : null;
+  
+  if (rd) rd.style.setProperty('background', '#0a1628', 'important');
+  if (io) io.style.setProperty('background', '#0a1628', 'important');
+  if (grade) grade.style.setProperty('background', '#0a1628', 'important');
+  if (examTd) examTd.style.setProperty('background', '#0a1628', 'important');
+  if (examWrapper) examWrapper.style.setProperty('background', '#0a1628', 'important');
+}
 function calculate(fromHistory = false){
   const detailBlock = document.getElementById('detailBlock');
   const finalGradeBlock = document.getElementById('finalGradeBlock');
@@ -832,19 +845,7 @@ buildTable();
 
   fixFinalCellsBackground();
   // Принудительная установка яркого фона для финальных ячеек (РД, Экзамен, ИО, Букв.)
-function fixFinalCellsBackground() {
-  const rd = document.getElementById('rd');
-  const io = document.getElementById('io');
-  const grade = document.getElementById('grade');
-  const examWrapper = document.querySelector('#examWrapper');
-  const examTd = examWrapper ? examWrapper.parentElement : null;
-  
-  if (rd) rd.style.setProperty('background', '#0a1628', 'important');
-  if (io) io.style.setProperty('background', '#0a1628', 'important');
-  if (grade) grade.style.setProperty('background', '#0a1628', 'important');
-  if (examTd) examTd.style.setProperty('background', '#0a1628', 'important');
-  if (examWrapper) examWrapper.style.setProperty('background', '#0a1628', 'important');
-}
+
 
 // Вызываем после построения таблицы
 if (document.readyState === 'loading') {

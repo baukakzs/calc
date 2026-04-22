@@ -129,26 +129,28 @@ let selectedHistoryIndex = null;
 function saveToHistory(data) {
   const timestamp = new Date();
   const historyEntry = {
-    id: Date.now(),
-    time: timestamp.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-    date: timestamp.toLocaleDateString('ru-RU'),
-    rk1: data.rk1,
-    rk2: data.rk2,
-    rd: data.rd,
-    exam: data.exam,
-    io: data.io,
-    grade: data.grade,
-    isAvtomat: data.isAvtomat,
-    dopusk: data.dopusk,
+  id: Date.now(),
+  time: timestamp.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+  date: timestamp.toLocaleDateString('ru-RU'),
+  rk1: data.rk1,
+  rk2: data.rk2,
+  rd: data.rd,
+  exam: data.exam,
+  io: data.io,
+  grade: data.grade,
+  isAvtomat: data.isAvtomat,
+  dopusk: data.dopusk,
+  weeks: data.weeks,
+  rk1val: data.rk1val,
+  rk2val: data.rk2val,
+  examval: data.examval,
   };
-  
-  calcHistory.unshift(historyEntry); // добавляем в начало
-  if (calcHistory.length > 20) calcHistory.pop(); // максимум 20 записей
-  
+  calcHistory.unshift(historyEntry);
+  if (calcHistory.length > 20) calcHistory.pop();
   updateHistoryUI();
   saveToLocalStorage();
 }
- 
+
 function updateHistoryUI() {
   const historyList = document.getElementById('historyList');
   const historyEmpty = document.getElementById('historyEmpty');
@@ -185,6 +187,19 @@ function selectHistoryItem(idx) {
   selectedHistoryIndex = idx;
   updateHistoryUI();
   showComparison(idx);
+  const entry = calcHistory[idx];
+  if(!entry.weeks) return;
+  ['lek','prak','lab','srsp'].forEach(type => {
+    entry.weeks[type].forEach((val,i) => {
+      const el = document.getElementById(`${type}-w${i+1}`);
+      if(el){ el.value=val; updateStyle(el); }
+    });
+  });
+  ['rk1','rk2','exam'].forEach(id => {
+    const el = document.getElementById(id);
+    const val = entry[id+'val'];
+    if(el && val){ el.value=val; updateStyle(el,true); }
+  });
 }
  
 function deleteHistoryItem(event, idx) {
@@ -392,7 +407,7 @@ function buildTable() {
       const tdIo=document.createElement('td');
       tdIo.id='io'; tdIo.textContent='—';
       tdIo.className='result-cell'; tdIo.rowSpan=4;
-      tdIo.style.cssText='background:#060e1f;border:1px solid #1e3a5f;font-size:0.85rem;';
+      tdIo.style.cssText='background:#0a1628;border:1px solid #1e3a5f;font-size:0.85rem;';
       tr.appendChild(tdIo);
       // Буква
       const tdGr=document.createElement('td');
@@ -449,6 +464,8 @@ function resetAllGrades(){
   if(rdEl) rdEl.style.color = '';
   const ioEl = document.getElementById('io');
   if(ioEl) ioEl.style.color = '';
+
+  fixFinalCellsBackground();
 }
 
 function toggleType(type, btn){
@@ -456,6 +473,25 @@ function toggleType(type, btn){
   btn.classList.toggle('active',types[type]);
   const row=document.getElementById(`row-${type}`);
   if(row) row.style.opacity=types[type]?'1':'0.4';
+// после этой строки добавить:
+document.querySelectorAll('#row-lek td[rowspan]').forEach(td => {
+  td.style.opacity = '1';
+});
+
+  // общие ячейки всегда остаются яркими
+  const sharedcells = ['tk1obsh','rk1','p1','tk2obsh','rk2','p2','rd','exam','io','grade'];
+  sharedcells.forEach(id => {
+    const el = document.getElementById(id);
+    if(el){
+      el.style.opacity = '1';
+      el.closest('td') && (el.closest('td').style.opacity = '1');
+    }
+  });
+  // также td с input#rk1 и input#rk2
+  ['rk1','rk2','exam'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el && el.closest('td')) el.closest('td').style.opacity = '1';
+  });
 }
 
 function getLetter(s){
@@ -750,9 +786,18 @@ saveToHistory({
   grade: finalGrade,
   isAvtomat: isAvtomat,
   dopusk: dopusk,
+  weeks: {
+    lek: Array.from({length:15},(_,i)=>document.getElementById(`lek-w${i+1}`)?.value||'НП'),
+    prak: Array.from({length:15},(_,i)=>document.getElementById(`prak-w${i+1}`)?.value||'НП'),
+    lab: Array.from({length:15},(_,i)=>document.getElementById(`lab-w${i+1}`)?.value||'НП'),
+    srsp: Array.from({length:15},(_,i)=>document.getElementById(`srsp-w${i+1}`)?.value||'НП'),
+  },
+  rk1val: document.getElementById('rk1')?.value||'НП',
+  rk2val: document.getElementById('rk2')?.value||'НП',
+  examval: document.getElementById('exam')?.value||'НП',
 });
-  document.getElementById('resultCard').style.display='block';
-  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+document.getElementById('resultCard').style.display='block';
+document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
 }
 
 buildTable();
@@ -786,4 +831,27 @@ buildTable();
   document.getElementById('resultCard').style.display = 'none';
   const wr = document.getElementById('examWrapper');
   if(wr) wr.classList.remove('is-avtomat');
+
+  fixFinalCellsBackground();
+  // Принудительная установка яркого фона для финальных ячеек (РД, Экзамен, ИО, Букв.)
+function fixFinalCellsBackground() {
+  const rd = document.getElementById('rd');
+  const io = document.getElementById('io');
+  const grade = document.getElementById('grade');
+  const examWrapper = document.querySelector('#examWrapper');
+  const examTd = examWrapper ? examWrapper.parentElement : null;
+  
+  if (rd) rd.style.setProperty('background', '#0a1628', 'important');
+  if (io) io.style.setProperty('background', '#0a1628', 'important');
+  if (grade) grade.style.setProperty('background', '#0a1628', 'important');
+  if (examTd) examTd.style.setProperty('background', '#0a1628', 'important');
+  if (examWrapper) examWrapper.style.setProperty('background', '#0a1628', 'important');
+}
+
+// Вызываем после построения таблицы
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', fixFinalCellsBackground);
+} else {
+  fixFinalCellsBackground();
+}
 })();

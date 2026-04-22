@@ -154,7 +154,7 @@ const section = document.getElementById('historySection');
 section.classList.add('show');
 
 const btn = document.querySelector('.history-btn');
-if (btn) btn.textContent = 'Скрыть';
+if (btn) btn.textContent = 'Очистить';
 
 historyVisible = true;
 }
@@ -219,21 +219,6 @@ function deleteHistoryItem(event, idx) {
   saveToLocalStorage();
 }
  
-function toggleHistory() {
-  const section = document.getElementById('historySection');
-  const buttons = document.querySelectorAll('.history-btn');
-  const btn = buttons[0]; // берём первую кнопку (Показать/Скрыть)
-  
-  historyVisible = !historyVisible;
-  
-  if (historyVisible) {
-    section.classList.add('show');
-    btn.textContent = 'Скрыть';
-  } else {
-    section.classList.remove('show');
-    btn.textContent = 'Показать';
-  }
-}
  
 function clearHistory() {
   if (confirm('Удалить всю историю расчётов? Это действие не можно отменить.')) {
@@ -307,7 +292,7 @@ function loadFromLocalStorage() {
 loadFromLocalStorage();
 // Показываем историю по дефолту
 document.getElementById('historySection').classList.add('show');
-document.querySelector('.history-btn').textContent = 'Скрыть';
+document.querySelector('.history-btn').textContent = 'Очистить';
 historyVisible = true;
 function buildTable() {
   const tbody = document.getElementById('tableBody');

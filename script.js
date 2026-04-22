@@ -420,12 +420,32 @@ function resetAllGrades(){
     if(el){ el.value='НП'; updateStyle(el,true); }
   });
   
-  // Сбрасываем авто-лейбл если был
+  // Сбрасываем авто-лейбл
   const wr=document.getElementById('examWrapper');
   if(wr) wr.classList.remove('is-avtomat');
   
   // Скрываем результаты
   document.getElementById('resultCard').style.display='none';
+  
+  // === НОВОЕ: сброс вычисляемых ячеек ===
+  // Сброс ТК1 и ТК2 по дисциплинам
+  for(const type of ['lek','prak','lab','srsp']){
+    const tk1El = document.getElementById(`tk1-${type}`);
+    const tk2El = document.getElementById(`tk2-${type}`);
+    if(tk1El) tk1El.textContent = '—';
+    if(tk2El) tk2El.textContent = '—';
+  }
+  // Сброс общих ячеек
+  const sharedCells = ['tk1obsh', 'tk2obsh', 'p1', 'p2', 'rd', 'io', 'grade'];
+  sharedCells.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = '—';
+  });
+  // Сброс цветов (необязательно)
+  const rdEl = document.getElementById('rd');
+  if(rdEl) rdEl.style.color = '';
+  const ioEl = document.getElementById('io');
+  if(ioEl) ioEl.style.color = '';
 }
 
 function toggleType(type, btn){
@@ -733,3 +753,34 @@ saveToHistory({
 }
 
 buildTable();
+
+// Очистка всех ячеек при загрузке страницы (без подтверждения)
+(function initClear() {
+  // Недельные оценки
+  for(const type of ['lek','prak','lab','srsp']){
+    for(let w=1;w<=15;w++){
+      const el=document.getElementById(`${type}-w${w}`);
+      if(el){ el.value='НП'; updateStyle(el); }
+    }
+  }
+  // РК1, РК2, Экзамен
+  ['rk1','rk2','exam'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){ el.value='НП'; updateStyle(el,true); }
+  });
+  // Вычисляемые ячейки
+  for(const type of ['lek','prak','lab','srsp']){
+    const tk1El = document.getElementById(`tk1-${type}`);
+    const tk2El = document.getElementById(`tk2-${type}`);
+    if(tk1El) tk1El.textContent = '—';
+    if(tk2El) tk2El.textContent = '—';
+  }
+  const sharedCells = ['tk1obsh', 'tk2obsh', 'p1', 'p2', 'rd', 'io', 'grade'];
+  sharedCells.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = '—';
+  });
+  document.getElementById('resultCard').style.display = 'none';
+  const wr = document.getElementById('examWrapper');
+  if(wr) wr.classList.remove('is-avtomat');
+})();

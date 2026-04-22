@@ -123,7 +123,7 @@ function makeInput(id, isRk=false) {
 }
 // ===== ИСТОРИЯ РАСЧЁТОВ =====
 let calcHistory = [];
-let historyVisible = false;
+let historyVisible = true;
 let selectedHistoryIndex = null;
  
 function saveToHistory(data) {
@@ -149,6 +149,14 @@ function saveToHistory(data) {
   if (calcHistory.length > 20) calcHistory.pop();
   updateHistoryUI();
   saveToLocalStorage();
+  // 👉 автоматически показываем историю после расчёта
+const section = document.getElementById('historySection');
+section.classList.add('show');
+
+const btn = document.querySelector('.history-btn');
+if (btn) btn.textContent = 'Скрыть';
+
+historyVisible = true;
 }
 
 function updateHistoryUI() {

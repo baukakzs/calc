@@ -926,3 +926,21 @@
 @media (max-width: 640px) {
   .result-banner { font-size: 1rem; padding: 14px 16px; }
 }
+
+/* Выравнивание всех границ таблицы — яркие и однотонные */
+.grade-table td,
+.grade-table th {
+  border: 1px solid #3b82f6 !important;  /* Яркий синий, как у общих ячеек */
+}
+
+/* Для ячеек, которые были с тусклым фоном, переопределяем фон и границу */
+.grade-table td.result-cell,
+.grade-table td.shared,
+.grade-table td[style*="background"] {
+  border: 1px solid #3b82f6 !important;
+}
+
+/* Убираем возможные двойные границы при collapse */
+.grade-table {
+  border-collapse: collapse;
+}

@@ -157,8 +157,8 @@ function updateHistoryUI() {
         <span><span class="label">РК1:</span><span class="value">${entry.rk1 !== null ? entry.rk1.toFixed(2) : '—'}</span></span>
         <span><span class="label">РК2:</span><span class="value">${entry.rk2 !== null ? entry.rk2.toFixed(2) : '—'}</span></span>
         <span><span class="label">РД:</span><span class="value">${entry.rd !== null ? entry.rd.toFixed(2) : '—'}</span></span>
-        <span><span class="label">Экзамен:</span><span class="value">${entry.exam !== null ? entry.exam.toFixed(2) : '—'}${entry.isAvtomat ? ' 🏆' : ''}</span></span>
-        <span><span class="label">ИО:</span><span class="value">${entry.io !== null ? entry.io.toFixed(2) : '—'}</span></span>
+        <span><span class="label">Экзамен:</span><span class="value">${entry.exam !== null ? (Math.round(entry.exam)).toFixed(2) : '—'}${entry.isAvtomat ? ' 🏆' : ''}</span></span>
+        <span><span class="label">ИО:</span><span class="value">${entry.io !== null ? (Math.round(entry.io)).toFixed(2) : '—'}</span></span>
       </div>
     </div>
   `).join('');
@@ -355,12 +355,12 @@ function buildTable() {
       const tdRd=document.createElement('td');
       tdRd.id='rd'; tdRd.textContent='—';
       tdRd.className='result-cell'; tdRd.rowSpan=4;
-      tdRd.style.cssText='background:#060e1f;border:1px solid #1e3a5f;font-size:0.85rem;';
+      tdRd.style.cssText='background:#0a1628;border:1px solid #1e3a5f;font-size:0.85rem;';
       tr.appendChild(tdRd);
       // Экзамен
       const tdEx=document.createElement('td');
       tdEx.rowSpan=4;
-      tdEx.style.cssText='background:#060e1f;border:1px solid #1e3a5f;';
+      tdEx.style.cssText='background:#0a1628;border:1px solid #1e3a5f;';
       const examWrapper=document.createElement('div');
       examWrapper.className='exam-wrapper';
       examWrapper.id='examWrapper';
@@ -381,7 +381,7 @@ function buildTable() {
       const tdGr=document.createElement('td');
       tdGr.id='grade'; tdGr.textContent='—';
       tdGr.className='result-cell'; tdGr.rowSpan=4;
-      tdGr.style.cssText='background:#060e1f;border:1px solid #1e3a5f;font-size:0.9rem;color:#60a5fa;';
+      tdGr.style.cssText='background:#0a1628;border:1px solid #1e3a5f;font-size:0.9rem;color:#60a5fa;';
       tr.appendChild(tdGr);
     }
 
@@ -641,7 +641,7 @@ const examForCalc=parseVal(examEl.value);
   if(dopusk===false) io=0;
   else if(rd!==null&&examForCalc!==null) io=round2(0.6*rd+0.4*examForCalc);
   const ioEl=document.getElementById('io');
-  if(ioEl){ ioEl.textContent=io!==null?Math.round(io).toString():'—'; ioEl.style.color=io!==null&&io>=50?'#34d399':'#f87171'; }
+  if(ioEl){ ioEl.textContent=io!==null?(Math.round(Number(io))).toFixed(2):'—'; ioEl.style.color=io!==null&&io>=50?'#34d399':'#f87171'; }
 
   // --- Step 8: Letter grade ---
   const finalGrade = io!==null ? getLetter(io) : (dopusk===false?'F':'—');
@@ -659,7 +659,7 @@ const examForCalc=parseVal(examEl.value);
     <div class="result-item"><span class="val">${rk2!==null?rk2.toFixed(2):'—'}</span><span class="lbl">РК2</span></div>
     <div class="result-item"><span class="val" style="${cv(p2,50)}">${p2!==null?p2.toFixed(2):'—'}</span><span class="lbl">Р2</span></div>
     <div class="result-item"><span class="val" style="${cv(rd,50)}">${rd!==null?Math.round(rd).toString():'—'}</span><span class="lbl">РД</span></div>
-    <div class="result-item ${isAvtomat?'highlight-avtomat':''}"><span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?Math.round(examForCalc).toString():'—'}</span><span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span></div>
+    <div class="result-item ${isAvtomat?'highlight-avtomat':''}"><span class="val" style="${isAvtomat?'color:#34d399':''}">${examForCalc!==null?(Math.round(examForCalc)).toFixed(2):'—'}</span><span class="lbl" style="${isAvtomat?'color:#10b981':''}">Экзамен${isAvtomat?' 🏆':''}</span></div>
     <div class="result-item"><span class="val" style="color:#60a5fa">${finalGrade}</span><span class="lbl">Буквенная</span></div>
   `;
 
@@ -721,9 +721,9 @@ const examForCalc=parseVal(examEl.value);
     <span style="color:#60a5fa">Р2</span> = 0.7 × ${tkObsh2!==null?tkObsh2.toFixed(2):'—'} + 0.3 × ${rk2!==null?rk2.toFixed(2):'—'} = <strong>${p2!==null?p2.toFixed(2):'—'}</strong><br>
     <span style="color:#60a5fa">РД</span> = (${p1!==null?p1.toFixed(2):'—'} + ${p2!==null?p2.toFixed(2):'—'}) / 2 = <strong>${rd!==null?rd.toFixed(2):'—'}</strong><br>
     ${isAvtomat
-  ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?Math.round(rd).toString():'—'} → ИО = 0.6 × ${Math.round(rd).toString()} + 0.4 × ${Math.round(rd).toString()} = <strong>${io!==null?(Math.round(io)).toFixed(2):'—'}</strong>`
+  ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd!==null?Math.round(rd).toString():'—'} → ИО = 0.6 × ${Math.round(rd).toString()} + 0.4 × ${Math.round(rd).toString()} = <strong>${io!==null?(Math.round(Number(io))).toFixed(2):'—'}</strong>`
   : io!==null&&dopusk!==false
-    ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?Math.round(rd).toString():'—'} + 0.4 × ${examForCalc!==null?(Math.round(examForCalc)).toFixed(2):'—'} = <strong>${(Math.round(io)).toFixed(2)}</strong>`
+    ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd!==null?Math.round(rd).toString():'—'} + 0.4 × ${examForCalc!==null?(Math.round(Number(examForCalc))).toFixed(2):'—'} = <strong>${(Math.round(Number(io))).toFixed(2)}</strong>`
     : dopusk===false?'<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>':''
 }
   `;

@@ -208,6 +208,7 @@ function selectHistoryItem(idx) {
     const val = entry[id+'val'];
     if(el && val){ el.value=val; updateStyle(el,true); }
   });
+  calculate(true);
 }
  
 function deleteHistoryItem(event, idx) {
@@ -530,7 +531,7 @@ function validateAllInputs() {
 
   return invalidFields;
 }
-function calculate(){
+function calculate(fromHistory = false){
   const detailBlock = document.getElementById('detailBlock');
   const finalGradeBlock = document.getElementById('finalGradeBlock');
   const resultGrid = document.getElementById('resultGrid');
@@ -772,6 +773,7 @@ fgBlock.innerHTML=`
 `;  } else fgBlock.style.display='none';
 
 // Сохраняем в историю
+if (!fromHistory) {
 saveToHistory({
   rk1: rk1,
   rk2: rk2,
@@ -793,6 +795,7 @@ saveToHistory({
 });
 document.getElementById('resultCard').style.display='block';
 document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+}
 }
 
 buildTable();

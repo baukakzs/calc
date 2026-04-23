@@ -44,25 +44,26 @@ function getCoef(type) {
 }
 
 function parseVal(v) {
-  if (v === undefined || v === null) return null;
+  if(v===undefined||v===null) return null;
   const str = String(v).trim();
-  if (str === '') return null;
+  if(str==='') return null;
   const u = str.toUpperCase();
-  if (u === 'НП') return null;
-  // Расширенный список "не явка"
-  if (['НЯ', 'Н', 'НБ'].includes(u)) return 0;
-  const n = parseFloat(str.replace(',', '.'));
-  return isNaN(n) ? null : Math.min(100, Math.max(0, n));
+  if(u==='НП') return null;
+  if(['НЯ', 'Н', 'НБ'].includes(u)) return 0;
+  const n = parseFloat(str.replace(',','.'));
+  return isNaN(n)?null:Math.min(100,Math.max(0,n));
 }
+
 function round2(x) { return x !== null ? Math.round(x * 100) / 100 : null; }
 function avg(arr) { const f = arr.filter(v => v !== null); return f.length ? round2(f.reduce((a, b) => a + b, 0) / f.length) : null; }
 
-function updateStyle(el, isRk = false) {
+function updateStyle(el, isRk=false) {
   const v = el.value.trim().toUpperCase();
-  el.classList.remove('np', 'nya');
-  if (v === '' || v === 'НП') el.classList.add('np');
-  else if (['НЯ', 'Н', 'НБ'].includes(v)) el.classList.add('nya');
+  el.classList.remove('np','nya');
+  if(v===''||v==='НП') el.classList.add('np');
+  else if(['НЯ', 'Н', 'НБ'].includes(v)) el.classList.add('nya');
 }
+
 function handleFocus(el) {
   // Если фокус на экзамене и он был автоматом — сбросить, дать ввести вручную
   if (el.id === 'exam' && el.classList.contains('avtomat')) {
@@ -501,14 +502,12 @@ function getLetter(s) {
 
 function validateAllInputs() {
   const invalidFields = [];
-
   const allInputs = document.querySelectorAll('input[type="text"]');
 
   allInputs.forEach(el => {
     const raw = el.value.trim();
     const upperRaw = raw.toUpperCase();
 
-    // Разрешённые варианты: пусто, НП, а также НЯ / Н / НБ
     if (raw === '' || upperRaw === 'НП' || ['НЯ', 'Н', 'НБ'].includes(upperRaw)) {
       el.classList.remove('error');
       return;
@@ -520,11 +519,10 @@ function validateAllInputs() {
       el.classList.add('error');
 
       let fieldName = el.id;
-
-      if (el.id.startsWith('lek-w')) fieldName = `Лекция, неделя ${el.id.replace('lek-w', '')}`;
-      else if (el.id.startsWith('prak-w')) fieldName = `Практика, неделя ${el.id.replace('prak-w', '')}`;
-      else if (el.id.startsWith('lab-w')) fieldName = `Лаборатория, неделя ${el.id.replace('lab-w', '')}`;
-      else if (el.id.startsWith('srsp-w')) fieldName = `СРСП, неделя ${el.id.replace('srsp-w', '')}`;
+      if (el.id.startsWith('lek-w')) fieldName = `Лекция, неделя ${el.id.replace('lek-w','')}`;
+      else if (el.id.startsWith('prak-w')) fieldName = `Практика, неделя ${el.id.replace('prak-w','')}`;
+      else if (el.id.startsWith('lab-w')) fieldName = `Лаборатория, неделя ${el.id.replace('lab-w','')}`;
+      else if (el.id.startsWith('srsp-w')) fieldName = `СРСП, неделя ${el.id.replace('srsp-w','')}`;
       else if (el.id === 'rk1') fieldName = 'РК1';
       else if (el.id === 'rk2') fieldName = 'РК2';
       else if (el.id === 'exam') fieldName = 'Экзамен';

@@ -349,13 +349,15 @@
   }
 
   .type-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin-bottom: 16px;
   }
 
-  .type-btn {
+  .type-btn {    
+    white-space: nowrap;
     padding: 6px 14px;
     background: var(--surface2);
     border: 1px solid var(--border);

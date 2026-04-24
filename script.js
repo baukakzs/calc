@@ -537,10 +537,6 @@ function buildInfoRow() {
   const infoRow = document.getElementById('infoRow');
   infoRow.innerHTML = `
     <div class="info-box"><strong style="color:#93c5fd;">НП</strong> — не предусмотрено &nbsp;|&nbsp; <strong style="color:#e879f9;">НЯ</strong> — не явка (0)</div>
-    <div class="info-box"><strong style="color:#93c5fd;">Допуск:</strong> РК1≥25, РК2≥25, (РК1+РК2)/2≥50, РД≥50 → иначе ИО=0 (F)</div>
-    <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
-    <div class="info-box"><strong style="color:#10b981;">🏆 Автомат:</strong> нет ни одной НЯ → РД ставится в поле экзамена автоматически</div>
-    ${isTrim ? `<div class="info-box" style="border-color:#7c3aed;"><strong style="color:#c084fc;">⚡ Триместр:</strong> ТК1 — недели 1–5 (РК на 5-й), ТК2 — недели 6–10 (РК на 10-й)</div>` : ''}
   `;
 }
 
@@ -892,19 +888,7 @@ function calculate(fromHistory = false) {
   }
 
   const det = document.getElementById('detailBlock');
-  det.innerHTML = `
-    <span style="color:#60a5fa">ТКобщ1</span> = взвешенная средняя по дисциплинам = <strong>${tkObsh1 !== null ? tkObsh1.toFixed(2) : '—'}</strong><br>
-    <span style="color:#60a5fa">Р1</span> = 0.7 × ${tkObsh1 !== null ? tkObsh1.toFixed(2) : '—'} + 0.3 × ${rk1 !== null ? rk1.toFixed(2) : '—'} = <strong>${p1 !== null ? p1.toFixed(2) : '—'}</strong><br>
-    <span style="color:#60a5fa">ТКобщ2</span> = взвешенная средняя по дисциплинам = <strong>${tkObsh2 !== null ? tkObsh2.toFixed(2) : '—'}</strong><br>
-    <span style="color:#60a5fa">Р2</span> = 0.7 × ${tkObsh2 !== null ? tkObsh2.toFixed(2) : '—'} + 0.3 × ${rk2 !== null ? rk2.toFixed(2) : '—'} = <strong>${p2 !== null ? p2.toFixed(2) : '—'}</strong><br>
-    <span style="color:#60a5fa">РД</span> = (${p1 !== null ? p1.toFixed(2) : '—'} + ${p2 !== null ? p2.toFixed(2) : '—'}) / 2 = <strong>${rd !== null ? rd.toFixed(2) : '—'}</strong><br>
-    ${isAvtomat
-      ? `<span style="color:#10b981">🏆 АВТОМАТ</span>: экзамен = РД = ${rd !== null ? Math.round(rd).toString() : '—'} → ИО = 0.6 × ${Math.round(rd).toString()} + 0.4 × ${Math.round(rd).toString()} = <strong>${io !== null ? (Math.round(Number(io))).toFixed(2) : '—'}</strong>`
-      : io !== null && dopusk !== false
-        ? `<span style="color:#60a5fa">ИО</span> = 0.6 × ${rd !== null ? Math.round(rd).toString() : '—'} + 0.4 × ${examForCalc !== null ? (Math.round(Number(examForCalc))).toFixed(2) : '—'} = <strong>${(Math.round(Number(io))).toFixed(2)}</strong>`
-        : dopusk === false ? '<span style="color:#ef4444">⚠ НЕДОПУСК → ИО = 0 → Оценка: F</span>' : ''
-    }
-  `;
+  det.innerHTML = '';
 
   const fgBlock = document.getElementById('finalGradeBlock');
   if (io !== null || dopusk === false) {
@@ -943,6 +927,7 @@ function calculate(fromHistory = false) {
 }
 
 buildTable();
+buildInfoRow();
 
 // Очистка всех ячеек при загрузке страницы (без подтверждения)
 (function initClear() {

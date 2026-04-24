@@ -1,154 +1,109 @@
-  <!DOCTYPE html>
-  <html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор оценок</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор оценок</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500&display=swap"
-      rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-  </head>
+<body>
 
-  <body>
+  <div style="max-width:1600px;margin:0 auto;">
+    <div class="header">
+      <h1>Калькулятор оценок || by N3XT || SIBk-23-6 || Alibek x Bayurzhan</h1>
+    </div>
 
-    <div style="max-width:1600px;margin:0 auto;">
-      <div class="header">
-        <h1>Калькулятор оценок || by N3XT || SIBk-23-6 || Alibek x Bayurzhan</h1>
-        <!--<div class="subtitle">АУЭС им. Гумарбека Даукеева · 2025–2026</div>-->
-      </div>
-
-      <div
-        style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
-        <div class="type-buttons">
-          <button class="type-btn active" data-type="lek" onclick="toggleType('lek',this)">Лекция</button>
-          <button class="type-btn active" data-type="prak" onclick="toggleType('prak',this)">Практика</button>
-          <button class="type-btn active" data-type="lab" onclick="toggleType('lab',this)">Лаборатория</button>
-          <button class="type-btn active" data-type="srsp" onclick="toggleType('srsp',this)">СРСП</button>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table class="grade-table" id="mainTable">
-          <thead>
-            <!-- Row 1: section labels -->
-            <tr class="section-header">
-              <th rowspan="2" style="min-width:140px;">Дисциплина</th>
-              <th colspan="7">1 рубежный контроль (недели 1–7)</th>
-              <th rowspan="2">ТК1</th>
-              <!-- Shared: TK1obsh, RK1, P1 -->
-              <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">ТК1<br>ОБЩ.</th>
-              <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">РК1</th>
-              <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">Р1</th>
-              <!-- Weeks 8-15 -->
-              <th colspan="8">2 рубежный контроль (недели 8–15)</th>
-              <th rowspan="2">ТК2</th>
-              <!-- Shared: TK2obsh, RK2, P2 -->
-              <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">ТК2<br>ОБЩ.</th>
-              <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">РК2</th>
-              <th rowspan="2" style="background:#0d1b2e;border:1px solid #2563eb;color:#93c5fd;">Р2</th>
-              <!-- Final shared -->
-              <th rowspan="2" style="background:#0a1628;border:1px solid #1d4ed8;color:#60a5fa;">РД</th>
-              <th rowspan="2" style="background:#0a1628;border:1px solid #1d4ed8;color:#60a5fa;">Экзамен</th>
-              <th rowspan="2" style="background:#0a1628;border:1px solid #1d4ed8;color:#60a5fa;">ИО</th>
-              <th rowspan="2" style="background:#0a1628;border:1px solid #1d4ed8;color:#60a5fa;">Букв.</th>
-            </tr>
-            <tr>
-              <th>1</th>
-              <th>2</th>
-              <th>3</th>
-              <th>4</th>
-              <th>5</th>
-              <th>6</th>
-              <th>7</th>
-              <th>8</th>
-              <th>9</th>
-              <th>10</th>
-              <th>11</th>
-              <th>12</th>
-              <th>13</th>
-              <th>14</th>
-              <th>15</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-
-      <div class="info-row">
-        <div class="info-box"><strong style="color:#93c5fd;">НП</strong> — не предусмотрено &nbsp;|&nbsp; <strong
-            style="color:#e879f9;">НЯ</strong> — не явка (0)</div>
-        <div class="info-box"><strong style="color:#93c5fd;">Допуск:</strong> РК1≥25, РК2≥25, (РК1+РК2)/2≥50, РД≥50 →
-          иначе ИО=0 (F)</div>
-        <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД
-          = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
-        <div class="info-box"><strong style="color:#10b981;">🏆 Автомат:</strong> нет ни одной НЯ → РД ставится в поле
-          экзамена автоматически</div>
-      </div>
-
-      <button class="btn-calc" onclick="calculate()">⚡ РАССЧИТАТЬ</button>
-      <button class="btn-calc" style="background: linear-gradient(135deg, #ef4444, #dc2626); max-width: 420px;"
-        onclick="resetAllGrades()">🔄 СБРОСИТЬ ВСЁ</button>
-
-      <div class="result-card" id="resultCard" style="display:none;">
-        <div style="font-family:'Unbounded';font-size:0.7rem;color:#06b6d4;margin-bottom:16px;letter-spacing:0.1em;">📊
-          РЕЗУЛЬТАТЫ</div>
-        <div class="result-grid" id="resultGrid"></div>
-        <div id="statusBadge" style="display:none;"></div>
-        <div id="deniedBlock" style="display:none;" class="denied-block">
-          <div class="denied-title">🚫 НЕ ДОПУЩЕН К ЭКЗАМЕНУ</div>
-          <div id="deniedReason" style="color:#fca5a5;font-size:0.8rem;"></div>
-        </div>
-        <div id="validationErrorBlock" style="display:none;" class="validation-error-block">
-          <div class="validation-error-title">Недопустимые значения</div>
-          <div id="validationErrorText" class="validation-error-text"></div>
-        </div>
-        <div class="detail-block" id="detailBlock"></div>
-        <div class="final-grade-big" id="finalGradeBlock" style="display:none;"></div>
-      </div>
-
-      <div class="history-section show" id="historySection">
-        <div class="history-header">
-          <h2>📊 История расчётов</h2>
-          <div class="history-controls">
-            <button class="history-btn danger" onclick="clearHistory()">Очистить</button>
-          </div>
-        </div>
-        <div class="history-list" id="historyList"></div>
-        <div class="history-empty" id="historyEmpty" style="display: none;">
-          Нет сохранённых расчётов. Сделайте первый расчёт чтобы начать историю 📝
-        </div>
-        <div class="history-comparison" id="historyComparison" style="display: none;">
-          <div style="font-weight: 600; margin-bottom: 8px; color: #93c5fd;">Сравнение с предыдущим:</div>
-          <div id="comparisonContent"></div>
-        </div>
+    <!-- Mode switcher -->
+    <div class="mode-switcher">
+      <span class="mode-label">Режим обучения:</span>
+      <div class="mode-toggle">
+        <button id="modeSemBtn" class="mode-btn active" onclick="setMode('semester')">📅 Семестр (15 нед.)</button>
+        <button id="modeTrimBtn" class="mode-btn" onclick="setMode('trimester')">⚡ Триместр (10 нед.)</button>
       </div>
     </div>
 
-    <script src="script.js?v=2"></script>
-  </body>
-  <footer class="footer">
-    <div class="footer-container">
+    <div
+      style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <div class="type-buttons">
+        <button class="type-btn active" data-type="lek" onclick="toggleType('lek',this)">Лекция</button>
+        <button class="type-btn active" data-type="prak" onclick="toggleType('prak',this)">Практика</button>
+        <button class="type-btn active" data-type="lab" onclick="toggleType('lab',this)">Лаборатория</button>
+        <button class="type-btn active" data-type="srsp" onclick="toggleType('srsp',this)">СРСП</button>
+      </div>
+    </div>
 
-      <div class="footer-left">
-        <div class="footer-title">Калькулятор оценок</div>
-        <div class="footer-subtitle">
-          Проект для расчёта академических оценок по регламенту университета
+    <div class="table-wrapper">
+      <table class="grade-table" id="mainTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="info-row" id="infoRow"></div>
+
+    <button class="btn-calc" onclick="calculate()">⚡ РАССЧИТАТЬ</button>
+    <button class="btn-calc" style="background: linear-gradient(135deg, #ef4444, #dc2626); max-width: 420px;"
+      onclick="resetAllGrades()">🔄 СБРОСИТЬ ВСЁ</button>
+
+    <div class="result-card" id="resultCard" style="display:none;">
+      <div style="font-family:'Unbounded';font-size:0.7rem;color:#06b6d4;margin-bottom:16px;letter-spacing:0.1em;">📊
+        РЕЗУЛЬТАТЫ</div>
+      <div class="result-grid" id="resultGrid"></div>
+      <div id="statusBadge" style="display:none;"></div>
+      <div id="deniedBlock" style="display:none;" class="denied-block">
+        <div class="denied-title">🚫 НЕ ДОПУЩЕН К ЭКЗАМЕНУ</div>
+        <div id="deniedReason" style="color:#fca5a5;font-size:0.8rem;"></div>
+      </div>
+      <div id="validationErrorBlock" style="display:none;" class="validation-error-block">
+        <div class="validation-error-title">Недопустимые значения</div>
+        <div id="validationErrorText" class="validation-error-text"></div>
+      </div>
+      <div class="detail-block" id="detailBlock"></div>
+      <div class="final-grade-big" id="finalGradeBlock" style="display:none;"></div>
+    </div>
+
+    <div class="history-section show" id="historySection">
+      <div class="history-header">
+        <h2>📊 История расчётов</h2>
+        <div class="history-controls">
+          <button class="history-btn danger" onclick="clearHistory()">Очистить</button>
         </div>
       </div>
-
-      <div class="footer-right">
-        <div>© 2026</div>
-        <div>Разработано студентами АУЭС</div>
-        <a href="https://t.me/B0nes_00" target="_blank" rel="noopener noreferrer" class="footer-link">
-          Связаться с разработчиком
-        </a>
+      <div class="history-list" id="historyList"></div>
+      <div class="history-empty" id="historyEmpty" style="display: none;">
+        Нет сохранённых расчётов. Сделайте первый расчёт чтобы начать историю 📝
       </div>
-
+      <div class="history-comparison" id="historyComparison" style="display: none;">
+        <div style="font-weight: 600; margin-bottom: 8px; color: #93c5fd;">Сравнение с предыдущим:</div>
+        <div id="comparisonContent"></div>
+      </div>
     </div>
-  </footer>
+  </div>
 
-  </html>
+  <script src="script.js?v=2"></script>
+</body>
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-left">
+      <div class="footer-title">Калькулятор оценок</div>
+      <div class="footer-subtitle">
+        Проект для расчёта академических оценок по регламенту университета
+      </div>
+    </div>
+    <div class="footer-right">
+      <div>© 2026</div>
+      <div>Разработано студентами АУЭС</div>
+      <a href="https://t.me/B0nes_00" target="_blank" rel="noopener noreferrer" class="footer-link">
+        Связаться с разработчиком
+      </a>
+    </div>
+  </div>
+</footer>
+
+</html>

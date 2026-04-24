@@ -1,3 +1,37 @@
+// ===== РЕЖИМ: семестр (15 нед, РК на 7 и 15) или триместр (10 нед, РК на 5 и 10) =====
+let currentMode = 'semester'; // 'semester' | 'trimester'
+
+function getModeConfig() {
+  if (currentMode === 'trimester') {
+    return {
+      totalWeeks: 10,
+      half1End: 5,   // weeks 1-5 → TK1
+      half2Start: 6, // weeks 6-10 → TK2
+      label1: '1 триместр (недели 1–5)',
+      label2: '2 триместр (недели 6–10)',
+    };
+  }
+  return {
+    totalWeeks: 15,
+    half1End: 7,    // weeks 1-7 → TK1
+    half2Start: 8,  // weeks 8-15 → TK2
+    label1: '1 семестр (недели 1–7)',
+    label2: '2 семестр (недели 8–15)',
+  };
+}
+
+function setMode(mode) {
+  if (currentMode === mode) return;
+  currentMode = mode;
+  document.getElementById('modeSemBtn').classList.toggle('active', mode === 'semester');
+  document.getElementById('modeTrimBtn').classList.toggle('active', mode === 'trimester');
+  // Rebuild table and reset
+  buildTable();
+  buildInfoRow();
+  resetAllGrades(true);
+}
+
+
 const types = { lek: true, prak: true, lab: true, srsp: true };
 const colors = { lek: '#3b82f6', prak: '#10b981', lab: '#f59e0b', srsp: '#8b5cf6' };
 const names = { lek: 'Лекция', prak: 'Практика', lab: 'Лаборатория', srsp: 'СРСП' };
@@ -44,24 +78,24 @@ function getCoef(type) {
 }
 
 function parseVal(v) {
-  if(v===undefined||v===null) return null;
+  if (v === undefined || v === null) return null;
   const str = String(v).trim();
-  if(str==='') return null;
+  if (str === '') return null;
   const u = str.toUpperCase();
-  if(u==='НП') return null;
-  if(['НЯ', 'Н', 'НБ'].includes(u)) return 0;
-  const n = parseFloat(str.replace(',','.'));
-  return isNaN(n)?null:Math.min(100,Math.max(0,n));
+  if (u === 'НП') return null;
+  if (['НЯ', 'Н', 'НБ'].includes(u)) return 0;
+  const n = parseFloat(str.replace(',', '.'));
+  return isNaN(n) ? null : Math.min(100, Math.max(0, n));
 }
 
 function round2(x) { return x !== null ? Math.round(x * 100) / 100 : null; }
 function avg(arr) { const f = arr.filter(v => v !== null); return f.length ? round2(f.reduce((a, b) => a + b, 0) / f.length) : null; }
 
-function updateStyle(el, isRk=false) {
+function updateStyle(el, isRk = false) {
   const v = el.value.trim().toUpperCase();
-  el.classList.remove('np','nya');
-  if(v===''||v==='НП') el.classList.add('np');
-  else if(['НЯ', 'Н', 'НБ'].includes(v)) el.classList.add('nya');
+  el.classList.remove('np', 'nya');
+  if (v === '' || v === 'НП') el.classList.add('np');
+  else if (['НЯ', 'Н', 'НБ'].includes(v)) el.classList.add('nya');
 }
 
 function handleFocus(el) {
@@ -78,7 +112,6 @@ function handleFocus(el) {
 
 function handleBlur(el) {
   let v = el.value.trim();
-
   if (v === '') {
     el.value = 'НП';
     updateStyle(el);
@@ -137,6 +170,7 @@ function saveToHistory(data) {
     id: Date.now(),
     time: timestamp.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
     date: timestamp.toLocaleDateString('ru-RU'),
+    mode: currentMode,
     rk1: data.rk1,
     rk2: data.rk2,
     rd: data.rd,
@@ -202,8 +236,23 @@ function selectHistoryItem(idx) {
   showComparison(idx);
   const entry = calcHistory[idx];
   if (!entry.weeks) return;
+
+  // Переключить режим, если сохранённый режим отличается от текущего
+  if (entry.mode && entry.mode !== currentMode) {
+    currentMode = entry.mode;
+    // Обновить активные кнопки
+    document.getElementById('modeSemBtn').classList.toggle('active', currentMode === 'semester');
+    document.getElementById('modeTrimBtn').classList.toggle('active', currentMode === 'trimester');
+    // Перестроить таблицу и информационную строку
+    buildTable();
+    buildInfoRow();
+    // Сбросить все оценки (чтобы не оставалось старых полей)
+    resetAllGrades(true);
+  }
+
+  // Теперь загружаем недельные оценки
   ['lek', 'prak', 'lab', 'srsp'].forEach(type => {
-    entry.weeks[type].forEach((val, i) => {
+    (entry.weeks[type] || []).forEach((val, i) => {
       const el = document.getElementById(`${type}-w${i + 1}`);
       if (el) { el.value = val; updateStyle(el); }
     });
@@ -300,7 +349,70 @@ loadFromLocalStorage();
 document.getElementById('historySection').classList.add('show');
 document.querySelector('.history-btn').textContent = 'Очистить';
 historyVisible = true;
+
+// ===== BUILD TABLE =====
 function buildTable() {
+  const cfg = getModeConfig();
+  const { totalWeeks, half1End, half2Start, label1, label2 } = cfg;
+  const half1Weeks = half1End; // weeks 1..half1End
+  const half2Weeks = totalWeeks - half1End; // weeks half2Start..totalWeeks
+
+  // Build thead
+  const thead = document.getElementById('tableHead');
+  thead.innerHTML = '';
+
+  // Row 1: section labels
+  const tr1 = document.createElement('tr');
+  tr1.className = 'section-header';
+
+  const thDisc = document.createElement('th');
+  thDisc.rowSpan = 2;
+  thDisc.style.minWidth = '140px';
+  thDisc.textContent = 'Дисциплина';
+  tr1.appendChild(thDisc);
+
+  const th1 = document.createElement('th');
+  th1.colSpan = half1Weeks;
+  th1.textContent = label1;
+  tr1.appendChild(th1);
+
+  // TK1, TK1obsh, RK1, P1 (shared)
+  ['ТК1', 'ТК1 ОБЩ.', 'РК1', 'Р1'].forEach((lbl, i) => {
+    const th = document.createElement('th');
+    th.rowSpan = 2;
+    if (i > 0) { th.style.background = '#0d1b2e'; th.style.border = '1px solid #2563eb'; th.style.color = '#93c5fd'; }
+    th.textContent = lbl;
+    tr1.appendChild(th);
+  });
+
+  const th2 = document.createElement('th');
+  th2.colSpan = half2Weeks;
+  th2.textContent = label2;
+  tr1.appendChild(th2);
+
+  // TK2, TK2obsh, RK2, P2, РД, Экзамен, ИО, Букв. (shared)
+  const finals = ['ТК2', 'ТК2 ОБЩ.', 'РК2', 'Р2', 'РД', 'Экзамен', 'ИО', 'Букв.'];
+  finals.forEach((lbl, i) => {
+    const th = document.createElement('th');
+    th.rowSpan = 2;
+    if (i < 4) { th.style.background = '#0d1b2e'; th.style.border = '1px solid #2563eb'; th.style.color = '#93c5fd'; }
+    else { th.style.background = '#0a1628'; th.style.border = '1px solid #1d4ed8'; th.style.color = '#60a5fa'; }
+    th.textContent = lbl;
+    tr1.appendChild(th);
+  });
+
+  thead.appendChild(tr1);
+
+  // Row 2: week numbers
+  const tr2 = document.createElement('tr');
+  for (let w = 1; w <= totalWeeks; w++) {
+    const th = document.createElement('th');
+    th.textContent = w;
+    tr2.appendChild(th);
+  }
+  thead.appendChild(tr2);
+
+  // Build tbody
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
   const disciplines = ['lek', 'prak', 'lab', 'srsp'];
@@ -316,33 +428,32 @@ function buildTable() {
     tdName.innerHTML = `<span class="dot" style="background:${colors[type]}"></span>${names[type]}`;
     tr.appendChild(tdName);
 
-    // Weeks 1-7
-    for (let w = 1; w <= 7; w++) {
+    // Weeks 1..half1End
+    for (let w = 1; w <= half1End; w++) {
       const td = document.createElement('td');
       td.appendChild(makeInput(`${type}-w${w}`));
       tr.appendChild(td);
     }
 
-    // ТК1 (avg weeks 1-7 for this discipline)
+    // ТК1
     const tdTk1 = document.createElement('td');
     tdTk1.id = `tk1-${type}`; tdTk1.textContent = '—'; tdTk1.className = 'result-cell';
     tr.appendChild(tdTk1);
 
-    // === SHARED CELLS (only first row gets rowspan=4) ===
+    // SHARED (only first row, rowspan=4)
     if (idx === 0) {
-      // ТК1ОБЩ
       const tdTk1o = document.createElement('td');
       tdTk1o.id = 'tk1obsh'; tdTk1o.textContent = '—';
       tdTk1o.className = 'result-cell shared'; tdTk1o.rowSpan = 4;
       tdTk1o.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;';
       tr.appendChild(tdTk1o);
-      // РК1
+
       const tdRk1 = document.createElement('td');
       tdRk1.rowSpan = 4;
       tdRk1.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;';
       tdRk1.appendChild(makeInput('rk1', true));
       tr.appendChild(tdRk1);
-      // Р1
+
       const tdP1 = document.createElement('td');
       tdP1.id = 'p1'; tdP1.textContent = '—';
       tdP1.className = 'result-cell shared'; tdP1.rowSpan = 4;
@@ -350,45 +461,44 @@ function buildTable() {
       tr.appendChild(tdP1);
     }
 
-    // Weeks 8-15
-    for (let w = 8; w <= 15; w++) {
+    // Weeks half2Start..totalWeeks
+    for (let w = half2Start; w <= totalWeeks; w++) {
       const td = document.createElement('td');
       td.appendChild(makeInput(`${type}-w${w}`));
       tr.appendChild(td);
     }
 
-    // ТК2 (avg weeks 8-15 for this discipline)
+    // ТК2
     const tdTk2 = document.createElement('td');
     tdTk2.id = `tk2-${type}`; tdTk2.textContent = '—'; tdTk2.className = 'result-cell';
     tr.appendChild(tdTk2);
 
-    // === SHARED CELLS second half (only first row) ===
+    // SHARED second half (only first row)
     if (idx === 0) {
-      // ТК2ОБЩ
       const tdTk2o = document.createElement('td');
       tdTk2o.id = 'tk2obsh'; tdTk2o.textContent = '—';
       tdTk2o.className = 'result-cell shared'; tdTk2o.rowSpan = 4;
       tdTk2o.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;';
       tr.appendChild(tdTk2o);
-      // РК2
+
       const tdRk2 = document.createElement('td');
       tdRk2.rowSpan = 4;
       tdRk2.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;';
       tdRk2.appendChild(makeInput('rk2', true));
       tr.appendChild(tdRk2);
-      // Р2
+
       const tdP2 = document.createElement('td');
       tdP2.id = 'p2'; tdP2.textContent = '—';
       tdP2.className = 'result-cell shared'; tdP2.rowSpan = 4;
       tdP2.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;';
       tr.appendChild(tdP2);
-      // РД
+
       const tdRd = document.createElement('td');
       tdRd.id = 'rd'; tdRd.textContent = '—';
       tdRd.className = 'result-cell'; tdRd.rowSpan = 4;
       tdRd.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;font-size:0.85rem;';
       tr.appendChild(tdRd);
-      // Экзамен
+
       const tdEx = document.createElement('td');
       tdEx.rowSpan = 4;
       tdEx.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;';
@@ -402,13 +512,13 @@ function buildTable() {
       examWrapper.appendChild(makeInput('exam', true));
       tdEx.appendChild(examWrapper);
       tr.appendChild(tdEx);
-      // ИО
+
       const tdIo = document.createElement('td');
       tdIo.id = 'io'; tdIo.textContent = '—';
       tdIo.className = 'result-cell'; tdIo.rowSpan = 4;
       tdIo.style.cssText = 'background:#0a1628;border:1px solid #1e3a5f;font-size:0.85rem;';
       tr.appendChild(tdIo);
-      // Буква
+
       const tdGr = document.createElement('td');
       tdGr.id = 'grade'; tdGr.textContent = '—';
       tdGr.className = 'result-cell'; tdGr.rowSpan = 4;
@@ -418,14 +528,27 @@ function buildTable() {
 
     tbody.appendChild(tr);
   });
+
+  fixFinalCellsBackground();
 }
 
-function resetAllGrades() {
-  if (!confirm('Сбросить все оценки? (Все значения станут НП)')) return;
+function buildInfoRow() {
+  const isTrim = currentMode === 'trimester';
+  const infoRow = document.getElementById('infoRow');
+  infoRow.innerHTML = `
+    <div class="info-box"><strong style="color:#93c5fd;">НП</strong> — не предусмотрено &nbsp;|&nbsp; <strong style="color:#e879f9;">НЯ</strong> — не явка (0)</div>
+    <div class="info-box"><strong style="color:#93c5fd;">Допуск:</strong> РК1≥25, РК2≥25, (РК1+РК2)/2≥50, РД≥50 → иначе ИО=0 (F)</div>
+    <div class="info-box"><strong style="color:#93c5fd;">Формулы:</strong> Р1 = 0.7×ТКобщ1 + 0.3×РК1 &nbsp;|&nbsp; РД = (Р1+Р2)/2 &nbsp;|&nbsp; ИО = 0.6×РД + 0.4×Экзамен</div>
+    <div class="info-box"><strong style="color:#10b981;">🏆 Автомат:</strong> нет ни одной НЯ → РД ставится в поле экзамена автоматически</div>
+    ${isTrim ? `<div class="info-box" style="border-color:#7c3aed;"><strong style="color:#c084fc;">⚡ Триместр:</strong> ТК1 — недели 1–5 (РК на 5-й), ТК2 — недели 6–10 (РК на 10-й)</div>` : ''}
+  `;
+}
 
-  // Сбрасываем все недельные оценки
+function resetAllGrades(silent = false) {
+  if (!silent && !confirm('Сбросить все оценки? (Все значения станут НП)')) return;
+  const cfg = getModeConfig();
   for (const type of ['lek', 'prak', 'lab', 'srsp']) {
-    for (let w = 1; w <= 15; w++) {
+    for (let w = 1; w <= cfg.totalWeeks; w++) {
       const el = document.getElementById(`${type}-w${w}`);
       if (el) { el.value = 'НП'; updateStyle(el); }
     }
@@ -519,10 +642,10 @@ function validateAllInputs() {
       el.classList.add('error');
 
       let fieldName = el.id;
-      if (el.id.startsWith('lek-w')) fieldName = `Лекция, неделя ${el.id.replace('lek-w','')}`;
-      else if (el.id.startsWith('prak-w')) fieldName = `Практика, неделя ${el.id.replace('prak-w','')}`;
-      else if (el.id.startsWith('lab-w')) fieldName = `Лаборатория, неделя ${el.id.replace('lab-w','')}`;
-      else if (el.id.startsWith('srsp-w')) fieldName = `СРСП, неделя ${el.id.replace('srsp-w','')}`;
+      if (el.id.startsWith('lek-w')) fieldName = `Лекция, неделя ${el.id.replace('lek-w', '')}`;
+      else if (el.id.startsWith('prak-w')) fieldName = `Практика, неделя ${el.id.replace('prak-w', '')}`;
+      else if (el.id.startsWith('lab-w')) fieldName = `Лаборатория, неделя ${el.id.replace('lab-w', '')}`;
+      else if (el.id.startsWith('srsp-w')) fieldName = `СРСП, неделя ${el.id.replace('srsp-w', '')}`;
       else if (el.id === 'rk1') fieldName = 'РК1';
       else if (el.id === 'rk2') fieldName = 'РК2';
       else if (el.id === 'exam') fieldName = 'Экзамен';
@@ -575,12 +698,13 @@ function calculate(fromHistory = false) {
     validationErrorBlock.style.display = 'none';
   }
   // --- Step 1: per-discipline TK1, TK2 ---
+  const cfg = getModeConfig();
   const tk = {};
   for (const type of ['lek', 'prak', 'lab', 'srsp']) {
-    const w1to7 = [], w8to15 = [];
-    for (let w = 1; w <= 7; w++)  w1to7.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
-    for (let w = 8; w <= 15; w++) w8to15.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
-    tk[type] = { tk1: avg(w1to7), tk2: avg(w8to15) };
+    const w1 = [], w2 = [];
+    for (let w = 1; w <= cfg.half1End; w++) w1.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
+    for (let w = cfg.half2Start; w <= cfg.totalWeeks; w++) w2.push(parseVal(document.getElementById(`${type}-w${w}`)?.value));
+    tk[type] = { tk1: avg(w1), tk2: avg(w2) };
     const el1 = document.getElementById(`tk1-${type}`);
     const el2 = document.getElementById(`tk2-${type}`);
     if (el1) el1.textContent = tk[type].tk1 !== null ? tk[type].tk1.toFixed(2) : '—';
@@ -641,9 +765,10 @@ function calculate(fromHistory = false) {
   }
   // Step 7: Автомат — нет ни одной НЯ/0 среди введённых оценок
   let hasNya = false;
+  const cfgHasNya = getModeConfig();  // можно переиспользовать cfg из начала функции
   outer: for (const type of ['lek', 'prak', 'lab', 'srsp']) {
     if (!types[type]) continue;
-    for (let w = 1; w <= 15; w++) {
+    for (let w = 1; w <= cfgHasNya.totalWeeks; w++) {
       const el = document.getElementById(`${type}-w${w}`);
       if (!el) continue;
       const raw = el.value.trim().toUpperCase();
@@ -822,8 +947,9 @@ buildTable();
 // Очистка всех ячеек при загрузке страницы (без подтверждения)
 (function initClear() {
   // Недельные оценки
+  const cfg = getModeConfig();
   for (const type of ['lek', 'prak', 'lab', 'srsp']) {
-    for (let w = 1; w <= 15; w++) {
+    for (let w = 1; w <= cfg.totalweeks; w++) {
       const el = document.getElementById(`${type}-w${w}`);
       if (el) { el.value = 'НП'; updateStyle(el); }
     }
@@ -859,4 +985,11 @@ buildTable();
   } else {
     fixFinalCellsBackground();
   }
+
+  window.setMode = setMode;
+  window.toggleType = toggleType;
+  window.calculate = calculate;
+  window.resetAllGrades = resetAllGrades;
+  window.clearHistory = clearHistory;
+
 })();

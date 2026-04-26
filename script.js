@@ -962,8 +962,7 @@ buildInfoRow();
 
   fixFinalCellsBackground();
   // Принудительная установка яркого фона для финальных ячеек (РД, Экзамен, ИО, Букв.)
-
-
+  
   // Вызываем после построения таблицы
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', fixFinalCellsBackground);

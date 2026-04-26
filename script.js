@@ -7,16 +7,16 @@ function getModeConfig() {
       totalWeeks: 10,
       half1End: 5,   // weeks 1-5 → TK1
       half2Start: 6, // weeks 6-10 → TK2
-      label1: '1 триместр (недели 1–5)',
-      label2: '2 триместр (недели 6–10)',
+      label1: '1 рубежный контроль (недели 1–5)',
+      label2: '2 рубежный контроль (недели 6–10)',
     };
   }
   return {
     totalWeeks: 15,
     half1End: 7,    // weeks 1-7 → TK1
     half2Start: 8,  // weeks 8-15 → TK2
-    label1: '1 семестр (недели 1–7)',
-    label2: '2 семестр (недели 8–15)',
+    label1: '1 рубежный контроль (недели 1–7)',
+    label2: '2 рубежный контроль (недели 8–15)',
   };
 }
 

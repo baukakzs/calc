@@ -350,15 +350,14 @@
 
   .type-buttons {
   display: flex;
-  gap: 8px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  gap: 6px;
+  flex-wrap: wrap;
   margin-bottom: 16px;
-  }
+  justify-content: center;
+}
 
   .type-btn {    
-    white-space: nowrap;
-    padding: 6px 14px;
+  padding: 6px 10px;
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -656,15 +655,7 @@
       font-size: 0.75rem;
     }
 
-    .type-buttons {
-      justify-content: center;
-    }
-
-    .type-btn {
-      padding: 5px 10px;
-      font-size: 0.68rem;
-    }
-
+    
     .info-row {
       flex-direction: column;
     }
@@ -767,14 +758,13 @@
     }
 
     .type-buttons {
-      flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .type-btn {
-      width: 100%;
-      padding: 6px 8px;
+      padding: 5px 6px;
       font-size: 0.65rem;
+      min-width: 60px;
     }
 
     .np-toggle {

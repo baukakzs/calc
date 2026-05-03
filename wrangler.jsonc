@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "calc",
+  "name": "calc-aues",
   "compatibility_date": "2026-05-03",
   "observability": {
     "enabled": true

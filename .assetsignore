@@ -1,0 +1,6 @@
+# Publish only the files used by the website.
+**
+!index.html
+!style.css
+!script.js
+!favicon.svg

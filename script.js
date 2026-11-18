@@ -1,4 +1,4 @@
-// ===== РЕЖИМ: семестр (15 нед, РК на 7 и 15) или триместр (10 нед, РК на 5 и 10) =====
+// ===== РЕЖИМ: семестр (15 нед, РК на 9 и 15) или триместр (10 нед, РК на 5 и 10) =====
 let currentMode = 'semester'; // 'semester' | 'trimester'
 
 function getModeConfig() {
@@ -13,10 +13,10 @@ function getModeConfig() {
   }
   return {
     totalWeeks: 15,
-    half1End: 7,    // weeks 1-7 → TK1
-    half2Start: 8,  // weeks 8-15 → TK2
-    label1: '1 рубежный контроль (недели 1–7)',
-    label2: '2 рубежный контроль (недели 8–15)',
+    half1End: 9,    // weeks 1-9 → TK1
+    half2Start: 10, // weeks 10-15 → TK2
+    label1: '1 рубежный контроль (недели 1–9)',
+    label2: '2 рубежный контроль (недели 10–15)',
   };
 }
 
